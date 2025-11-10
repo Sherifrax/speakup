@@ -1,0 +1,19 @@
+.app-layout {
+  @apply min-h-screen flex bg-cover bg-center;
+  background-image: url("../../public/images/gradient-background.jpg");
+}
+
+.dark .app-layout {
+  background-image: url("../../public/images/gradient-background-darkmode.jpg");
+}
+
+@media (max-width: 768px) {
+  .app-layout {
+    background-position: center top;
+  }
+}
+@media (min-width: 769px) {
+  .app-layout {
+    background-position: center center;
+  }
+}

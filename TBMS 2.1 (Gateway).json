@@ -1,0 +1,507 @@
+{
+  "name": "TBMS 2.1 (Gateway)",
+  "version": "1",
+  "items": [
+    {
+      "type": "folder",
+      "name": "commons",
+      "filename": "commons",
+      "seq": 2,
+      "root": {
+        "request": {
+          "auth": {
+            "mode": "inherit"
+          }
+        },
+        "meta": {
+          "name": "commons",
+          "seq": 2
+        }
+      },
+      "items": [
+        {
+          "type": "http",
+          "name": "auth/login",
+          "filename": "auth-login.bru",
+          "seq": 1,
+          "settings": {
+            "encodeUrl": true,
+            "timeout": 0
+          },
+          "tags": [],
+          "request": {
+            "url": "http://192.168.0.10:8070/tbms-commons/api/auth/login",
+            "method": "POST",
+            "headers": [
+              {
+                "name": "Content-Type",
+                "value": "application/json",
+                "enabled": true
+              }
+            ],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n    \"username\": \"NPC00348\",\n    \"password\": \"12345\"\n  }",
+              "formUrlEncoded": [],
+              "multipartForm": [],
+              "file": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "inherit"
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "employee/search",
+          "filename": "employee-search.bru",
+          "seq": 2,
+          "settings": {
+            "encodeUrl": true,
+            "timeout": 0
+          },
+          "tags": [],
+          "request": {
+            "url": "http://192.168.0.10:8070/tbms-commons/api/employee/search",
+            "method": "POST",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"params\": {\n    \"commonSearchString\": \"NPC00348\"\n  }\n}",
+              "formUrlEncoded": [],
+              "multipartForm": [],
+              "file": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzM4NCJ9.eyJ1c2VySWQiOjkyNiwiZW1haWwiOiJ1dGhheWFuYW5AdHJvamFuY29uc3RydWN0aW9uLmdyb3VwIiwic3ViIjoiTlBDMDAzNDgiLCJpYXQiOjE3NjIzMjQ2MTIsImV4cCI6MTc2MjQxMTAxMn0.gDV4qnCdIFklRy1MLN0lK2cz-kNg9FrX5Tu25W35gKqywjPwSr9nyBSYR-gy_Hgp"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "user/loadProfile",
+          "filename": "user-loadProfile.bru",
+          "seq": 3,
+          "settings": {
+            "encodeUrl": true,
+            "timeout": 0
+          },
+          "tags": [],
+          "request": {
+            "url": "http://192.168.0.10:8070/tbms-commons/api/user/loadProfile?moduleId=SPU12345",
+            "method": "GET",
+            "headers": [],
+            "params": [
+              {
+                "name": "moduleId",
+                "value": "SPU12345",
+                "type": "query",
+                "enabled": true
+              }
+            ],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": [],
+              "file": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzM4NCJ9.eyJ1c2VySWQiOjkyNiwiZW1haWwiOiJ1dGhheWFuYW5AdHJvamFuY29uc3RydWN0aW9uLmdyb3VwIiwic3ViIjoiTlBDMDAzNDgiLCJpYXQiOjE3NjIzMjQ2MTIsImV4cCI6MTc2MjQxMTAxMn0.gDV4qnCdIFklRy1MLN0lK2cz-kNg9FrX5Tu25W35gKqywjPwSr9nyBSYR-gy_Hgp"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "folder",
+      "name": "speakup",
+      "filename": "speakup",
+      "seq": 3,
+      "root": {
+        "request": {
+          "auth": {
+            "mode": "inherit"
+          }
+        },
+        "meta": {
+          "name": "speakup",
+          "seq": 3
+        }
+      },
+      "items": [
+        {
+          "type": "http",
+          "name": "speakup/action",
+          "filename": "speakup-action.bru",
+          "seq": 6,
+          "settings": {
+            "encodeUrl": true,
+            "timeout": 0
+          },
+          "tags": [],
+          "request": {
+            "url": "http://192.168.0.10:8070/tbms-speakup/api/speakup/action",
+            "method": "POST",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n    \"params\": {\n        \"compId\": 1,\n        \"ID\": 14,\n        \"action\": \"Approve\",\n        \"approvalActionID\": -1,\n        \"status\": \"\",\n        \"remarks\": \"\",\n        \"assignedEmp\": \"test\"\n    }\n}",
+              "formUrlEncoded": [],
+              "multipartForm": [],
+              "file": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzM4NCJ9.eyJ1c2VySWQiOjkyNiwiZW1haWwiOiJ1dGhheWFuYW5AdHJvamFuY29uc3RydWN0aW9uLmdyb3VwIiwic3ViIjoiTlBDMDAzNDgiLCJpYXQiOjE3NjIzMjQ2MTIsImV4cCI6MTc2MjQxMTAxMn0.gDV4qnCdIFklRy1MLN0lK2cz-kNg9FrX5Tu25W35gKqywjPwSr9nyBSYR-gy_Hgp"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "speakup/getbyId",
+          "filename": "speakup-getbyId.bru",
+          "seq": 4,
+          "settings": {
+            "encodeUrl": true,
+            "timeout": 0
+          },
+          "tags": [],
+          "request": {
+            "url": "http://192.168.0.10:8070/tbms-speakup/api/speakup/getbyId",
+            "method": "POST",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"params\": {\n    \"payload\": \"/VKdo1GFOuKdW5wMXVWid5Vv+dboHcH/zI9327FLU8YOJIJpIW6eMeHEOurP9dWCGWJ9PpT4n0178cG23VWsNipcl7l88Huhn4o0lw/QNtnS8b23vb2oNxcmB3i2j93x7u7P19xyIkCUwqfeF4KuPHfCS5u1tjPFVPN1vgBIJc7TTL2Oc1MgLsMbIMM8yII3C2AuDXyKSAhSZ+k1Wv//6cEJOzryoRQ4DOGgKSBq4zAtfyrFhMdtXeQdfiTKG+H50bKaE35x8W2yHe9dBWjjE2xjqfprO+zsaHe8x1bHQppJBzDWnPjXQR5dvUwxu19utjU+ZXwR6KHiG6Qx9lFHvAWEieoCmv33xUq68sKAb1T9xFRI\",\n    \"compId\": -1\n  }\n}",
+              "formUrlEncoded": [],
+              "multipartForm": [],
+              "file": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzM4NCJ9.eyJ1c2VySWQiOjkyNiwiZW1haWwiOiJ1dGhheWFuYW5AdHJvamFuY29uc3RydWN0aW9uLmdyb3VwIiwic3ViIjoiTlBDMDAzNDgiLCJpYXQiOjE3NjIzMjQ2MTIsImV4cCI6MTc2MjQxMTAxMn0.gDV4qnCdIFklRy1MLN0lK2cz-kNg9FrX5Tu25W35gKqywjPwSr9nyBSYR-gy_Hgp"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "speakup/getFilters",
+          "filename": "speakup-getFilters.bru",
+          "seq": 3,
+          "settings": {
+            "encodeUrl": true,
+            "timeout": 0
+          },
+          "tags": [],
+          "request": {
+            "url": "http://192.168.0.10:8070/tbms-speakup/api/speakup/getFilters",
+            "method": "GET",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "none",
+              "formUrlEncoded": [],
+              "multipartForm": [],
+              "file": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzM4NCJ9.eyJ1c2VySWQiOjkyNiwiZW1haWwiOiJ1dGhheWFuYW5AdHJvamFuY29uc3RydWN0aW9uLmdyb3VwIiwic3ViIjoiTlBDMDAzNDgiLCJpYXQiOjE3NjIzMjQ2MTIsImV4cCI6MTc2MjQxMTAxMn0.gDV4qnCdIFklRy1MLN0lK2cz-kNg9FrX5Tu25W35gKqywjPwSr9nyBSYR-gy_Hgp"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "speakup/getHistory",
+          "filename": "speakup-getHistory.bru",
+          "seq": 7,
+          "settings": {
+            "encodeUrl": true,
+            "timeout": 0
+          },
+          "tags": [],
+          "request": {
+            "url": "http://192.168.0.10:8070/tbms-speakup/api/speakup/getHistory",
+            "method": "POST",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"params\": {\n    \"payload\": \"/VKdo1GFOuKdW5wMXVWid5Vv+dboHcH/zI9327FLU8YOJIJpIW6eMeHEOurP9dWCGWJ9PpT4n0178cG23VWsNipcl7l88Huhn4o0lw/QNtnS8b23vb2oNxcmB3i2j93x7u7P19xyIkCUwqfeF4KuPHfCS5u1tjPFVPN1vgBIJc7TTL2Oc1MgLsMbIMM8yII3C2AuDXyKSAhSZ+k1Wv//6cEJOzryoRQ4DOGgKSBq4zAtfyrFhMdtXeQdfiTKG+H50bKaE35x8W2yHe9dBWjjE2xjqfprO+zsaHe8x1bHQppJBzDWnPjXQR5dvUwxu19utjU+ZXwR6KHiG6Qx9lFHvAWEieoCmv33xUq68sKAb1T9xFRI\"\n  }\n}",
+              "formUrlEncoded": [],
+              "multipartForm": [],
+              "file": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzM4NCJ9.eyJ1c2VySWQiOjkyNiwiZW1haWwiOiJ1dGhheWFuYW5AdHJvamFuY29uc3RydWN0aW9uLmdyb3VwIiwic3ViIjoiTlBDMDAzNDgiLCJpYXQiOjE3NjIzMjQ2MTIsImV4cCI6MTc2MjQxMTAxMn0.gDV4qnCdIFklRy1MLN0lK2cz-kNg9FrX5Tu25W35gKqywjPwSr9nyBSYR-gy_Hgp"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "speakup/save",
+          "filename": "speakup-save.bru",
+          "seq": 5,
+          "settings": {
+            "encodeUrl": true,
+            "timeout": 0
+          },
+          "tags": [],
+          "request": {
+            "url": "http://192.168.0.10:8070/tbms-speakup/api/speakup/save",
+            "method": "PUT",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n    \"params\": {\n        \"IsAnonymous\": 1,\n        \"ID\": 14, // set 0 for insert\n        \"Attachment\": \"SpeakUp.jpg\",\n        \"compID\": \"1\",\n        \"TypeID\": 1,\n        \"Message\": \"test\"\n    }\n}",
+              "formUrlEncoded": [],
+              "multipartForm": [],
+              "file": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzM4NCJ9.eyJ1c2VySWQiOjkyNiwiZW1haWwiOiJ1dGhheWFuYW5AdHJvamFuY29uc3RydWN0aW9uLmdyb3VwIiwic3ViIjoiTlBDMDAzNDgiLCJpYXQiOjE3NjIzMjQ2MTIsImV4cCI6MTc2MjQxMTAxMn0.gDV4qnCdIFklRy1MLN0lK2cz-kNg9FrX5Tu25W35gKqywjPwSr9nyBSYR-gy_Hgp"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "speakup/searchEntry",
+          "filename": "speakup-searchEntry.bru",
+          "seq": 1,
+          "settings": {
+            "encodeUrl": true,
+            "timeout": 0
+          },
+          "tags": [],
+          "request": {
+            "url": "http://192.168.0.10:8070/tbms-speakup/api/speakup/searchEntry?size=1&sortOrder=asc",
+            "method": "POST",
+            "headers": [],
+            "params": [
+              {
+                "name": "size",
+                "value": "1",
+                "type": "query",
+                "enabled": true
+              },
+              {
+                "name": "sortOrder",
+                "value": "asc",
+                "type": "query",
+                "enabled": true
+              },
+              {
+                "name": "page",
+                "value": "1",
+                "type": "query",
+                "enabled": false
+              },
+              {
+                "name": "sortBy",
+                "value": "ID",
+                "type": "query",
+                "enabled": false
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n    \"params\": {\n        \"IsAnonymous\": \"0\",\n        \"compID\": \"1\",\n        \"StatusID\": \"-1\",\n        \"TypeID\": \"-1\",\n        \"CommonSearchString\": \"\"\n    }\n}",
+              "formUrlEncoded": [],
+              "multipartForm": [],
+              "file": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzM4NCJ9.eyJ1c2VySWQiOjkyNiwiZW1haWwiOiJ1dGhheWFuYW5AdHJvamFuY29uc3RydWN0aW9uLmdyb3VwIiwic3ViIjoiTlBDMDAzNDgiLCJpYXQiOjE3NjIzMjQ2MTIsImV4cCI6MTc2MjQxMTAxMn0.gDV4qnCdIFklRy1MLN0lK2cz-kNg9FrX5Tu25W35gKqywjPwSr9nyBSYR-gy_Hgp"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "speakup/searchManage",
+          "filename": "speakup-searchManage.bru",
+          "seq": 2,
+          "settings": {
+            "encodeUrl": true,
+            "timeout": 0
+          },
+          "tags": [],
+          "request": {
+            "url": "http://192.168.0.10:8070/tbms-speakup/api/speakup/searchEntry?size=1&sortOrder=asc",
+            "method": "POST",
+            "headers": [],
+            "params": [
+              {
+                "name": "size",
+                "value": "1",
+                "type": "query",
+                "enabled": true
+              },
+              {
+                "name": "sortOrder",
+                "value": "asc",
+                "type": "query",
+                "enabled": true
+              },
+              {
+                "name": "page",
+                "value": "1",
+                "type": "query",
+                "enabled": false
+              },
+              {
+                "name": "sortBy",
+                "value": "ID",
+                "type": "query",
+                "enabled": false
+              }
+            ],
+            "body": {
+              "mode": "json",
+              "json": "{\n    \"params\": {\n        \"IsAnonymous\": \"0\",\n        \"compID\": \"1\",\n        \"StatusID\": \"-1\",\n        \"TypeID\": \"-1\",\n        \"CommonSearchString\": \"\"\n    }\n}",
+              "formUrlEncoded": [],
+              "multipartForm": [],
+              "file": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzM4NCJ9.eyJ1c2VySWQiOjkyNiwiZW1haWwiOiJ1dGhheWFuYW5AdHJvamFuY29uc3RydWN0aW9uLmdyb3VwIiwic3ViIjoiTlBDMDAzNDgiLCJpYXQiOjE3NjIzMjQ2MTIsImV4cCI6MTc2MjQxMTAxMn0.gDV4qnCdIFklRy1MLN0lK2cz-kNg9FrX5Tu25W35gKqywjPwSr9nyBSYR-gy_Hgp"
+              }
+            }
+          }
+        },
+        {
+          "type": "http",
+          "name": "speakup/updateHistory",
+          "filename": "speakup-updateHistory.bru",
+          "seq": 8,
+          "settings": {
+            "encodeUrl": true,
+            "timeout": 0
+          },
+          "tags": [],
+          "request": {
+            "url": "http://192.168.0.10:8070/tbms-speakup/api/speakup/updateHistory",
+            "method": "PUT",
+            "headers": [],
+            "params": [],
+            "body": {
+              "mode": "json",
+              "json": "{\n  \"params\": {\n    \"payload\": \"/VKdo1GFOuKdW5wMXVWid5Vv+dboHcH/zI9327FLU8YOJIJpIW6eMeHEOurP9dWCGWJ9PpT4n0178cG23VWsNipcl7l88Huhn4o0lw/QNtnS8b23vb2oNxcmB3i2j93x7u7P19xyIkCUwqfeF4KuPHfCS5u1tjPFVPN1vgBIJc7TTL2Oc1MgLsMbIMM8yII3C2AuDXyKSAhSZ+k1Wv//6cEJOzryoRQ4DOGgKSBq4zAtfyrFhMdtXeQdfiTKG+H50bKaE35x8W2yHe9dBWjjE2xjqfprO+zsaHe8x1bHQppJBzDWnPjXQR5dvUwxu19utjU+ZXwR6KHiG6Qx9lFHvAWEieoCmv33xUq68sKAb1T9xFRI\",\n    \"message\": \"Test message\"\n  }\n}",
+              "formUrlEncoded": [],
+              "multipartForm": [],
+              "file": []
+            },
+            "script": {},
+            "vars": {},
+            "assertions": [],
+            "tests": "",
+            "docs": "",
+            "auth": {
+              "mode": "bearer",
+              "bearer": {
+                "token": "eyJhbGciOiJIUzM4NCJ9.eyJ1c2VySWQiOjkyNiwiZW1haWwiOiJ1dGhheWFuYW5AdHJvamFuY29uc3RydWN0aW9uLmdyb3VwIiwic3ViIjoiTlBDMDAzNDgiLCJpYXQiOjE3NjIzMjQ2MTIsImV4cCI6MTc2MjQxMTAxMn0.gDV4qnCdIFklRy1MLN0lK2cz-kNg9FrX5Tu25W35gKqywjPwSr9nyBSYR-gy_Hgp"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "environments": [],
+  "root": {
+    "request": {
+      "auth": {
+        "mode": "none"
+      }
+    },
+    "meta": {
+      "name": "Gateway 2.1 Copy"
+    }
+  },
+  "brunoConfig": {
+    "version": "1",
+    "name": "TBMS 2.1 (Gateway)",
+    "type": "collection",
+    "ignore": [
+      "node_modules",
+      ".git"
+    ]
+  }
+}
