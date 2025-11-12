@@ -1,5 +1,5 @@
 import React from 'react';
-import { FiEdit, FiCheck, FiX, FiInfo, FiTrash2, FiSend, FiList, FiClock } from 'react-icons/fi';
+import { FiEdit, FiCheck, FiX, FiTrash2, FiSend, FiList, FiClock } from 'react-icons/fi';
 import type { SpeakUpItem } from '../types/speakupTypes';
 
 interface SpeakUpActionMenuProps {
@@ -66,20 +66,6 @@ export const SpeakUpActionMenu: React.FC<SpeakUpActionMenuProps> = ({
   };
   
   const items = [
-    {
-      key: "view",
-      label: (
-        <button
-          onClick={() => {
-            onView(entry);
-            onClose?.();
-          }}
-          className="flex items-center px-4 py-3 text-sm text-blue-700 dark:text-blue-300 w-full text-left hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 rounded-lg mx-2 hover:shadow-sm"
-        >
-          <FiInfo className="mr-3 text-blue-500 w-4 h-4" /> View Details
-        </button>
-      ),
-    },
     {
       key: "history",
       label: (

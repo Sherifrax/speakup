@@ -1,139 +1,84 @@
-// features/speakUp/types/speakUpTypes.ts
+import { KeyValuePair } from "../../common/types/commonTypes";
 
-export interface SpeakUpEntry {
+// 🔹 Each record in search response
+export interface SpeakUpItem {
   ID: number;
   Message: string;
   Attachment: string;
   IsAnonymous: boolean;
-  EditBtn: boolean;
-  SubmitBtn: boolean;
-  CancelBtn: boolean;
   Status: string;
+  EMPNUMBER: string;
+  EMPNAME: string;
+  Designation: string;
+  AssignedEmp: string;
   Approver: string;
-  SpeakUpType: string | null;
+  SpeakUpType: string;
   encryptedData: string;
-} // This interface is the response for the entry page
+  InfoBtn: boolean | null;
+  EditBtn: boolean | null;
+  SubmitBtn: boolean | null;
+  CancelBtn: boolean | null;
+  AssignBtn: boolean | null;
+  UpdateBtn: boolean | null;
+  CloseBtn: boolean | null;
+  ApproveBtn: boolean | null;
+  RejectBtn: boolean | null;
+}
 
-export interface SpeakUpFormData {
-  ID: number; 
-  Message: string;
-  Attachment: string;
-  IsAnonymous: boolean;
-  TypeID: number;
-  CompId: number;
-} // Insert/ Update speak-up entry.
-
+// 🔹 Search request body
 export interface SpeakUpSearchParams {
-  IsAnonymous?: number;
-  CompId?: number;
-  StatusID?: string;
-  TypeID?: string;
-  CommonSearchString?: string;
+  IsAnonymous: number; // "0" or "1"
+  compID: number;
+  StatusID: number;
+  TypeID: number;
+  CommonSearchString: string;
 }
 
-export interface SpeakUpFilters {
-  StatusID: string;
+export interface SpeakUpFilterState {
   TypeID: string;
-  IsAnonymous: string;
+  StatusID: string;
+  IsAnonymous: boolean;
 }
 
-export interface SpeakUpType {
-  key: number;
-  value: string;
-} // Request Type
-
-export interface SpeakUpStatus {
-  key: number;
-  value: string;
-  sortOrder: number;
-} // Request Status
-
-export interface SpeakUpFiltersResponse {
-  speakUpStatus: SpeakUpStatus[];
-  speakUpType: SpeakUpType[];
-}
-
-export interface SpeakUpHistoryEntry {
-  Action: string;
-  "Action By": string;
-  "Action On": string;
-  Comment: string | null;
-  "Approver Action": string | null;
-}
-
-export interface SpeakUpSubmitParams {
-  compId: number;
-  ID: number;
-  action: string;
-  approvalActionID: number;
-  status: string;
-  remarks: string;
-  assignedEmp: string;
-}
-
-export interface SpeakUpSaveRequest {
-  params: {
-    IsAnonymous: number;
-    ID: number;
-    compID: string;
-    Attachment: string;
-    TypeID: number;
-    Message: string;
-  };
-}
-
-export interface SpeakUpSubmitRequest {
-  params: SpeakUpSubmitParams;
-}
-
-export interface SpeakUpSearchRequest {
-  params: SpeakUpSearchParams;
-}
-
-export interface SpeakUpSearchResponse {
-  data: SpeakUpEntry[];
-  count: Array<{ TotalCount: number }>;
-}
-
-export interface SpeakUpGetByIdResponse {
-  data: Array<{
-    Message: string;
-    Attachment: string;
-    IsAnonymous: number;
-    SpeakUpTypeID: number;
-  }>;
-}
-
-export interface SpeakUpHistoryResponse {
-  data: SpeakUpHistoryEntry[];
-}
-
-export interface SpeakUpSaveResponse {
-  data: Array<{
-    Status: string;
-  }>;
-}
-
-export interface SpeakUpSubmitResponse {
-  data: Array<{
-    Status: string;
-  }>;
-}
-
-export interface SpeakUpUpdateHistoryParams {
-  compId: number;
-  ID: number;
+export interface SpeakUpFilter {
+  speakUpStatus: KeyValuePair[];
+  speakUpType: KeyValuePair[];
   message: string;
 }
 
-export interface SpeakUpUpdateHistoryRequest {
-  params: SpeakUpUpdateHistoryParams;
+// 🔹 Save request body
+export interface SpeakUpSaveParams {
+  ID: number; 
+  IsAnonymous: number; 
+  Attachment: string;
+  compID: number;
+  TypeID: number;
+  Message: string;
+  encryptedData: string;
+  actionBy: string;
 }
 
-export interface SpeakUpUpdateHistoryResponse {
-  data: Array<{
-    Status: string;
-  }>;
+// 🔹 update history request body
+export interface SpeakUpHistorySaveParams {
+  Message: string;
+  encryptedData: string; 
+  actionBy: string;
 }
 
-export type SortDirection = "asc" | "desc";
+// 🔹 action request body
+export interface SpeakUpActionParams {
+  action: string; 
+  remarks: string;
+  approvalActionID: number;
+  assignedEmp: string;
+  encryptedData: string;
+  actionBy: string;
+}
+
+export interface SpeakUpGet {
+  Id: number; 
+  SpeakUpTypeID: number;
+  IsAnonymous: boolean;
+  Attachment: string;
+  Message: string;
+}

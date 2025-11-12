@@ -1,8 +1,23 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { ChevronDownIcon, HorizontaLDots } from "../icons";
+import { ChevronDownIcon, HorizontaLDots } from "../assets/icons/general";
 import { useSidebar } from "../context/SidebarContext";
-import { navItems, type NavItem } from "../constants/navigation";
+import { ICONS } from "../constants/iconList";
+import { MenuItem } from "../features/common/types/commonTypes";
+import type { NavItem } from "../features/common/types/navigation";
+
+const apiMenu: MenuItem[] = JSON.parse(localStorage.getItem("menu") || "[]");
+
+// Convert API MenuItem[] → NavItem[]
+const navItems: NavItem[] = apiMenu.map((m) => ({
+  name: m.MenuName,
+  icon: (() => {
+    const IconComponent = ICONS[m.IconName as keyof typeof ICONS] || ICONS.Grid;
+    return <IconComponent />;
+  })(),
+  path: m.Url,
+}));
+
 
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
@@ -202,7 +217,7 @@ const AppSidebar: React.FC = () => {
     <aside
       className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 
     bg-transparent text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 
-    border-r-2 border-white shadow-[1px_0_4px_rgba(255,255,255,0.3)]
+    border-r border-[1px] border-[#C0C0C0]
     ${
       isExpanded || isMobileOpen
         ? "w-[290px]"

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FiLoader, FiAlertCircle, FiPlus, FiMinus } from "react-icons/fi";
+import { FiLoader, FiAlertCircle, FiPlus, FiMinus, FiChevronUp, FiChevronDown } from "react-icons/fi";
 import { PaginationWrapper } from "./PaginationWrapper";
 
 export interface ColumnType<T> {
@@ -119,7 +119,7 @@ export function DataTable<T>({
                 return (
                   <th
                     key={col.key}
-                    className={`px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider 
+                    className={`px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider group 
                       ${col.className || ""} ${col.sortable ? "cursor-pointer select-none" : ""}`}
                     onClick={() => {
                       if (col.sortable && onSort) {
@@ -129,10 +129,29 @@ export function DataTable<T>({
                       }
                     }}
                   >
-                    <div className="flex items-center">
+                    <div className="flex items-center gap-1.5">
                       {col.title}
-                      {col.sortable && isSorted && (
-                        <span className="ml-1">{sortDirection === "asc" ? "▲" : "▼"}</span>
+                      {col.sortable && (
+                        <span className="inline-flex flex-col leading-none ml-0.5">
+                          <FiChevronUp
+                            className={`h-3 w-3 transition-colors ${
+                              isSorted
+                                ? sortDirection === "asc"
+                                  ? "text-blue-600 dark:text-blue-400"
+                                  : "text-gray-300 dark:text-gray-500"
+                                : "text-gray-300 group-hover:text-gray-400"
+                            }`}
+                          />
+                          <FiChevronDown
+                            className={`h-3 w-3 -mt-1 transition-colors ${
+                              isSorted
+                                ? sortDirection === "desc"
+                                  ? "text-blue-600 dark:text-blue-400"
+                                  : "text-gray-300 dark:text-gray-500"
+                                : "text-gray-300 group-hover:text-gray-400"
+                            }`}
+                          />
+                        </span>
                       )}
                     </div>
                   </th>

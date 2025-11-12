@@ -26,6 +26,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
+      showCloseButton={false}
       className="max-w-4xl rounded-2xl shadow-2xl"
     >
       <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden">

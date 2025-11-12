@@ -1,12 +1,11 @@
-export enum SpeakUpUrls {
-  Save = "speakup/save",
-  Submit = "speakup/submit", // legacy, not used
-  Action = "speakup/action",
-  Search = "speakup/search",
-  SearchEntry = "speakup/searchEntry",
-  GetById = "speakup/getbyId",
-  GetHistory = "speakup/getHistory",
-  GetFilters = "speakup/getFilters",
-  UpdateHistory = "speakup/updateHistory",
-  DownloadAttachment = "speakup/download",
-}
+export enum speakupUrls {
+    // Path segments only; module prefix comes from baseModule.speakup
+    Search = "api/speakup/search",
+    SearchManage = "api/speakup/searchEntry",
+    Get ="api/speakup/getbyId",
+    Filters="api/speakup/getFilters",
+    Save = "api/speakup/save",
+    action = "api/speakup/action",
+    GetHistory= "api/speakup/getHistory",
+    UpdateHistory = "api/speakup/updateHistory"
+  }

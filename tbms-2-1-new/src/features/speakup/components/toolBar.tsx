@@ -9,6 +9,7 @@ interface ActionBarProps {
   onFilterToggle: () => void;
   onAddClick: () => void;
   placeholderKey?: keyof typeof SearchBarPlaceholders;
+  showAddButton?: boolean;
 }
 
 export const Toolbar = ({
@@ -17,6 +18,7 @@ export const Toolbar = ({
   onFilterToggle,
   onAddClick,
   placeholderKey = "speakUp",
+  showAddButton = true,
 }: ActionBarProps) => {
   return (
     <div className="flex flex-row md:flex-row gap-4 items-center w-full">
@@ -24,7 +26,7 @@ export const Toolbar = ({
         <SearchInput value={searchQuery} onChange={onSearchChange} placeholder={SearchBarPlaceholders[placeholderKey]} />
         <FilterButton onClick={onFilterToggle} />
       </div>
-      <AddButton onClick={onAddClick} />
+      {showAddButton && <AddButton onClick={onAddClick} />}
     </div>
   );
 };

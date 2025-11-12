@@ -2,5 +2,5 @@
 
 export enum PaginationDefaults {
   Page = 1,
-  PageSize = 5,
+  PageSize = 7,
 }

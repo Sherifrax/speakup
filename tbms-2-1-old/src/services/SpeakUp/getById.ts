@@ -1,26 +1,19 @@
 import { apiService } from "../apiService";
-import { SpeakUpUrls } from "../../enum/api/SpeakUp.enum";
-import { SpeakUpGetByIdResponse } from "../../features/speakUp/types/speakUpTypes";
+import { speakupUrls } from "../../enum/api/speakup.enum";
+import { baseModule } from "../../enum/api/basemodules.enum";
+import { SpeakUpGet } from "../../features/speakup/types/speakupTypes";
 
-export const speakUpGetById = apiService.injectEndpoints({
+// API endpoint definition
+export const speakupGetById = apiService.injectEndpoints({
   endpoints: (builder) => ({
-    getSpeakUpById: builder.query<
-      SpeakUpGetByIdResponse,
-      { payload: string; compId?: number }
-    >({
-      query: ({ payload, compId = -1 }) => ({
-        url: SpeakUpUrls.GetById,
+    getSpeakupById: builder.mutation<SpeakUpGet, { encryptedData: string }>({
+      query: (body) => ({
+        url: baseModule.speakup + speakupUrls.Get, 
         method: "POST",
-        body: {
-          params: {
-            payload,
-            compId,
-          },
-        },
+        body,
       }),
     }),
   }),
 });
 
-export const { useGetSpeakUpByIdQuery } = speakUpGetById;
-
+export const { useGetSpeakupByIdMutation } = speakupGetById;

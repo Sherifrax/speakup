@@ -1,18 +1,20 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { ApiBaseName } from "../enum/api/ApiBaseName.enum";
+import { baseUrls } from "../enum/api/baseurls.enum";
 
 // Function to get the token (modify as per your auth logic)
-const getToken = () => localStorage.getItem("access_token") || "";
+const getToken = () => localStorage.getItem("token") || "";
+// const getAD = () => localStorage.getItem("AD") || "";
 
 // Create a base API service with token authentication
 export const apiService = createApi({
   reducerPath: "apiService",
   baseQuery: fetchBaseQuery({
-    baseUrl: ApiBaseName.SPEAKUP_BASE_URL,
+    baseUrl: baseUrls.BASE_URL,
     prepareHeaders: (headers) => {
       const token = getToken();
       if (token) {
         headers.set("Authorization", `Bearer ${token}`);
+        // headers.set("AD", getAD());
       }
       return headers;
     },

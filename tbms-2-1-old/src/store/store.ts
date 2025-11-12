@@ -7,11 +7,11 @@ export const store = configureStore({
     [authApi.reducerPath]: authApi.reducer,
     [apiService.reducerPath]: apiService.reducer,
   },
-  // @ts-ignore - RTK Query middleware type compatibility issue
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware()
-      .concat(authApi.middleware)
-      .concat(apiService.middleware),
+    getDefaultMiddleware().concat(
+      authApi.middleware,
+      apiService.middleware
+    ),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

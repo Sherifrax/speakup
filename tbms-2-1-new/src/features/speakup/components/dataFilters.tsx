@@ -152,11 +152,20 @@ export const SpeakUpFilter: React.FC<SpeakUpFilterProps> = ({
             {options
               ?.filter((option: any) => {
                 if (field.name === 'TypeID' || field.name === 'StatusID') {
+                  if (!option || !option.value) return false;
                   const optionValueLower = option.value.toLowerCase().trim();
-                  // Filter out placeholder values like "all", "select", etc.
-                  return optionValueLower !== 'all' && 
-                         optionValueLower !== 'select' && 
-                         optionValueLower !== '<--select-->';
+                  // Filter out placeholder values - check for exact matches and common variations
+                  const isPlaceholder = 
+                    optionValueLower === 'all' || 
+                    optionValueLower === 'select' || 
+                    optionValueLower === '<--select-->' ||
+                    optionValueLower === '--select--' ||
+                    optionValueLower === 'select...' ||
+                    optionValueLower === '--select' ||
+                    optionValueLower === 'select--' ||
+                    // Also filter if value matches common placeholder patterns (case-insensitive)
+                    /^[\s\-<>]*select[\s\-<>]*$/i.test(option.value.trim());
+                  return !isPlaceholder;
                 }
                 return true;
               })
@@ -229,7 +238,7 @@ export const SpeakUpFilter: React.FC<SpeakUpFilterProps> = ({
   return (
     <>
       <div
-        className="fixed inset-0 bg-gray-900/20 z-[9998] transition-opacity"
+        className="fixed inset-0 z-[9998]"
         onClick={onClose}
       />
 

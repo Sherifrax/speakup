@@ -4,4 +4,5 @@ export enum ActionType {
   Approve = "Approve",
   Reject = "Reject",
   Assign = "Assign",
+  Close = "Close",
 }

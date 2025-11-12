@@ -1,18 +1,18 @@
 import { apiService } from "../apiService";
-import { SpeakUpUrls } from "../../enum/api/SpeakUp.enum";
-import { SpeakUpSaveRequest, SpeakUpSaveResponse } from "../../features/speakUp/types/speakUpTypes";
+import { speakupUrls } from "../../enum/api/speakup.enum";
+import { baseModule } from "../../enum/api/basemodules.enum";
+import { SpeakUpSaveParams } from "../../features/speakup/types/speakupTypes";
 
-export const speakUpSave = apiService.injectEndpoints({
+export const speakupSave = apiService.injectEndpoints({
   endpoints: (builder) => ({
-    saveSpeakUp: builder.mutation<SpeakUpSaveResponse, SpeakUpSaveRequest>({
-      query: (speakUpData) => ({
-        url: SpeakUpUrls.Save,
-        method: "PUT",
-        body: speakUpData,
+    saveSpeakup: builder.mutation<void, SpeakUpSaveParams>({
+      query: (params) => ({
+        url: baseModule.speakup + speakupUrls.Save, 
+        method: "POST",
+        body: { params }, 
       }),
     }),
   }),
 });
 
-export const { useSaveSpeakUpMutation } = speakUpSave;
-
+export const { useSaveSpeakupMutation } = speakupSave;

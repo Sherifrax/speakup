@@ -1,81 +1,95 @@
 import { useEffect, useState } from "react";
-import ComponentCard from "../../components/common/ComponentCard";
-import PageMeta from "../../components/common/PageMeta";
-import { useSpeakUp } from "../../features/speakUp/hooks/useSpeakUp";
-import { useSpeakUpFilters } from "../../features/speakUp/hooks/useSpeakUpFilters";
-import { SpeakUpFilter } from "../../features/speakUp/components/SpeakUpFilters";
-import { SpeakUpFormModal } from "../../features/speakUp/components/SpeakUpFormModal";
-import { SpeakUpViewModal } from "../../features/speakUp/components/SpeakUpViewModal";
-import { HistoryModal } from "../../features/speakUp/components/HistoryModal";
-import { Toolbar } from "../../features/speakUp/components/SpeakUpToolbar";
-import { SpeakUpTableWrapper } from "../../features/speakUp/components/SpeakUpTableWrapper";
-import { SpeakUpEntry as SpeakUpEntryType } from "../../features/speakUp/types/speakUpTypes";
-import { useSearch } from "../../hooks/useSearch";
-import { useSort } from "../../hooks/useSort";
-import { useMediaQuery } from "react-responsive";
+import ComponentCard from "../../features/common/components/page/ComponentCard"
+import PageMeta from "../../features/common/components/page/PageMeta";
+import { useSpeakUp } from "../../features/speakup/hooks/useSpeakUp";
+import { useSpeakUpFilters } from "../../features/speakup/hooks/useSpeakUpFilters";
+import { SpeakUpFilter } from "../../features/speakup/components/dataFilters";
+import { SpeakUpFormModal } from "../../features/speakup/components/formModal";
+import { Toolbar } from "../../features/speakup/components/toolBar";
+import { SpeakUpTable } from "../../features/speakup/components/dataTable";
+import {
+  SpeakUpItem,
+  SpeakUpSaveParams,
+} from "../../features/speakup/types/speakupTypes";
+import { useSearch } from "../../features/common/hooks/useSearch";
+import { useSort } from "../../features/common/hooks/useSort";
+import { useGetSpeakupByIdMutation } from "../../services/Speakup/GetById";
+import { ActionType } from "../../enum/actionType.enum";
+import { ActionModal } from "../../features/speakup/components/actionModal";
 
-export const SpeakUpManage: React.FC = () => {
-  const isMobile = useMediaQuery({ maxWidth: 768 });
-  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
-  const [historyEntry, setHistoryEntry] = useState<SpeakUpEntryType | null>(null);
-  
+export const SpeakUpManagePage = () => {
   const {
     isFormOpen,
     setIsFormOpen,
     isFilterOpen,
     setIsFilterOpen,
-    isViewOpen,
-    selectedEntry,
     formData,
     setFormData,
     currentPage,
     setCurrentPage,
     pageSize,
     totalRecords,
-    speakUpEntries,
+    speakUpList,
     saveStatus,
     handleSave,
-    handleSubmit,
     resetForm,
-    fetchSpeakUpEntries,
-    handleEdit,
-    handleView,
-    closeViewModal,
+    fetchSpeakUps,
     errors,
-    filtersData,
-    isLoadingFilters,
-    isLoadingEntry,
-    editingEntryId,
+    loading,
   } = useSpeakUp();
 
-  const { searchQuery, handleSearchChange: originalHandleSearchChange, resetSearch } = useSearch();
-  const { filters, handleFilterChange: originalHandleFilterChange, resetFilters: originalResetFilters } = useSpeakUpFilters();
+  const {
+    searchQuery,
+    handleSearchChange: originalHandleSearchChange,
+    resetSearch,
+  } = useSearch();
   const { sortColumn, sortDirection, handleSort } = useSort();
 
+  // 🔹 Use filters hook with dropdown & encryption data
+  const {
+    filters,
+    handleFilterChange: originalHandleFilterChange,
+    resetFilters: originalResetFilters,
+    options,
+    isLoading: filterLoading,
+  } = useSpeakUpFilters();
+
+  // 🔹 Extract dropdowns & encryption key
+  const typeOptions = options?.typeOptions || [];
+
+  // 🔹 Mutation for GetById API
+  const [getSpeakupById, { isLoading: getLoading }] =
+    useGetSpeakupByIdMutation();
+
+  // ✅ Fetch list when filters/search/pagination/sort changes
   useEffect(() => {
-    fetchSpeakUpEntries(
-      {
-        IsAnonymous: filters.IsAnonymous && filters.IsAnonymous !== "" ? parseInt(filters.IsAnonymous, 10) : 0,
-        CompId: 1,
-        StatusID: filters.StatusID,
-        TypeID: filters.TypeID,
-        CommonSearchString: searchQuery,
-      },
-      {
-        page: currentPage,
-        size: pageSize,
-        sortBy: sortColumn || "id",
-        sortOrder: sortDirection,
-      }
-    );
+    const searchParams = {
+      TypeID: filters.TypeID !== -1 ? Number(filters.TypeID) : 0,
+      StatusID: filters.StatusID !== -1 ? Number(filters.StatusID) : 0,
+      IsAnonymous: filters.IsAnonymous ? 1 : 0,
+      CommonSearchString: searchQuery,
+      compID: filters.compID ?? 0,
+    };
+
+    const pagination = {
+      page: currentPage,
+      size: pageSize,
+      sortBy: sortColumn || "ID",
+      sortOrder: sortDirection,
+    };
+
+    fetchSpeakUps(searchParams, pagination);
   }, [searchQuery, filters, currentPage, pageSize, sortColumn, sortDirection]);
 
+  // ✅ Handlers
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     originalHandleSearchChange(e);
     setCurrentPage(1);
   };
 
-  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleFilterChange = (
+    e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>
+  ) => {
     originalHandleFilterChange(e);
     setCurrentPage(1);
   };
@@ -86,108 +100,108 @@ export const SpeakUpManage: React.FC = () => {
     setCurrentPage(1);
   };
 
-  // handleView is now provided by the useSpeakUp hook
+  const handleSpeakUpGetActions = async (
+    record: SpeakUpItem,
+    actionBy: string
+  ) => {
+    try {
+      const body = { encryptedData: record.ID.toString() };
+      const response = await getSpeakupById(body).unwrap();
 
-  const handleDelete = (entry: SpeakUpEntryType) => {
-    // Handle delete action
-    console.log("Delete entry:", entry);
+      const updatedFormData: SpeakUpSaveParams = {
+        ID: response.Id,
+        IsAnonymous: response.IsAnonymous ? 1 : 0,
+        Attachment: response.Attachment || "",
+        compID: 0,
+        TypeID: Number(response.SpeakUpTypeID) || 0,
+        Message: response.Message || "",
+        encryptedData: record.encryptedData,
+        actionBy, // ✅ dynamic string value ("btnEdit", "btnInfo", etc.)
+      };
+
+      setFormData(updatedFormData);
+      setIsFormOpen(true);
+    } catch (error) {
+      console.error(`Error fetching SpeakUp by ID for ${actionBy}:`, error);
+    }
   };
 
-  const handleApprove = (entry: SpeakUpEntryType) => {
-    handleSubmit(entry, "Approve");
+  const [selectedRecord, setSelectedRecord] = useState<SpeakUpItem | null>(
+    null
+  );
+  const [isActionModalOpen, setIsActionModalOpen] = useState(false);
+  const [currentAction, setCurrentAction] = useState<ActionType>(ActionType.Submit);
+  const [actionBy, setActionBy] = useState<string>("");
+
+  const openActionModal = (
+    record: SpeakUpItem,
+    actionType: ActionType,
+    actionByStr: string
+  ) => {
+    setSelectedRecord(record); // store the current record
+    setCurrentAction(actionType); // store the action type
+    setActionBy(actionByStr); // store actionBy string
+    setIsActionModalOpen(true); // open modal
   };
 
-  const handleReject = (entry: SpeakUpEntryType) => {
-    handleSubmit(entry, "Reject");
+  const handlePrint = (record: SpeakUpItem) => {
+    console.log("Print SpeakUp Record:", record);
   };
-
-  const handleCancel = (entry: SpeakUpEntryType) => {
-    handleSubmit(entry, "Cancel");
-  };
-
-  const handleSubmitEntry = (entry: SpeakUpEntryType) => {
-    handleSubmit(entry, "Submit");
-  };
-
-  const handleViewHistory = (entry: SpeakUpEntryType) => {
-    setHistoryEntry(entry);
-    setIsHistoryOpen(true);
-  };
-
-  const closeHistoryModal = () => {
-    setIsHistoryOpen(false);
-    setHistoryEntry(null);
-  };
-
-  const totalPages = Math.ceil(totalRecords / pageSize);
 
   return (
     <>
-      <PageMeta title="Speak Up" description="Speak Up Entry" />
-      
-      {/* Page Title Section */}
-      <div className="mb-8 pt-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              Speak Up Entry
-            </h1>
-          </div>
-        </div>
-      </div>
-      
-      <ComponentCard title="Track Speak Up entries and submissions" className="shadow-xl rounded-3xl border border-gray-200 dark:border-gray-700">
+      <PageMeta title="SpeakUp Management" description="" />
+      <ComponentCard
+        title="SpeakUp Management"
+        className="shadow-xl rounded-3xl border border-gray-200 dark:border-gray-700 bg-white/10 dark:bg-gray-900/10 backdrop-blur-sm"
+      >
         <div className="space-y-6 relative p-6">
           {/* Toolbar */}
           <Toolbar
             searchQuery={searchQuery}
             onSearchChange={handleSearchChange}
             onFilterToggle={() => setIsFilterOpen(!isFilterOpen)}
-            onAddClick={() => setIsFormOpen(true)}
-          />
-
-          {/* Filters */}
-          <SpeakUpFilter
-            isOpen={isFilterOpen}
-            onClose={() => setIsFilterOpen(false)}
-            filters={filters}
-            onFilterChange={handleFilterChange}
-            onReset={resetFilters}
-            onApply={() => {
-              setIsFilterOpen(false);
-              setCurrentPage(1);
+            onAddClick={() => {
+              resetForm("btnAdd");
+              setIsFormOpen(true);
             }}
-            speakUpStatuses={filtersData?.speakUpStatus || []}
-            speakUpTypes={filtersData?.speakUpType || []}
-            isLoading={isLoadingFilters}
           />
 
           {/* Table */}
-          <SpeakUpTableWrapper
-            isMobile={isMobile}
-            speakUpEntries={speakUpEntries}
+          <SpeakUpTable
+            speakUpList={speakUpList}
+            totalItems={totalRecords}
+            pageSize={pageSize}
+            currentPage={currentPage}
+            onPageChange={setCurrentPage}
+            onSort={handleSort}
             sortColumn={sortColumn}
             sortDirection={sortDirection}
-            onSort={handleSort}
-            onEdit={handleEdit}
-            onView={handleView}
-            onDelete={handleDelete}
-            onApprove={handleApprove}
-            onReject={handleReject}
-            onCancel={handleCancel}
-            onSubmit={handleSubmitEntry}
-            onViewHistory={handleViewHistory}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-            totalItems={totalRecords}
-            itemsPerPage={pageSize}
-            isLoading={false}
-            isEndUser={true}
+            loading={loading}
+            actionHandlers={{
+              onEdit: handleSpeakUpGetActions,
+              onInfo: handleSpeakUpGetActions,
+              onSubmit: openActionModal,
+              onCancel: handlePrint,
+            }}
           />
         </div>
       </ComponentCard>
 
+      {/* Filter Modal */}
+      <SpeakUpFilter
+        isOpen={isFilterOpen}
+        onClose={() => setIsFilterOpen(false)}
+        filters={filters}
+        onFilterChange={handleFilterChange}
+        onReset={resetFilters}
+        onApply={() => {
+          setIsFilterOpen(false);
+          setCurrentPage(1);
+        }}
+      />
+
+      {/* Form Modal */}
       <SpeakUpFormModal
         isOpen={isFormOpen}
         onClose={() => {
@@ -196,28 +210,25 @@ export const SpeakUpManage: React.FC = () => {
         }}
         formData={formData}
         onFormChange={setFormData}
-        onSubmit={handleSave}
+        onSave={handleSave}
         saveStatus={saveStatus}
         errors={errors}
-        speakUpTypes={filtersData?.speakUpType || []}
-        isLoadingTypes={isLoadingFilters}
-        isLoadingEntry={isLoadingEntry}
-        editingEntryId={editingEntryId}
+        typeOptions={typeOptions}
+        encryptedData={formData.encryptedData}
       />
 
-      <SpeakUpViewModal
-        isOpen={isViewOpen}
-        onClose={closeViewModal}
-        entry={selectedEntry}
-      />
-
-      <HistoryModal
-        isOpen={isHistoryOpen}
-        onClose={closeHistoryModal}
-        entry={historyEntry}
+      {/* Action Modal */}
+      <ActionModal
+        isOpen={isActionModalOpen}
+        onClose={() => setIsActionModalOpen(false)}
+        actionType={currentAction}
+        encryptedData={selectedRecord?.encryptedData || ""}
+        approvalActionID={0}
+        assignedEmp={selectedRecord?.AssignedEmp || ""}
+        actionBy={actionBy}
       />
     </>
   );
 };
 
-
+export default SpeakUpManagePage;

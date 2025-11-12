@@ -55,12 +55,12 @@ export const Pagination = ({
       )}
 
       <div className="flex items-center gap-1.5 bg-gray-50/50 dark:bg-gray-800/30 p-1.5 rounded-lg border border-gray-200 dark:border-gray-700 order-1 md:order-2">
-        {/* First page button - hidden on mobile */}
+        {/* First page button - now visible on mobile too */}
         {firstLastButtons && (
           <Button
             onClick={() => onPageChange(1)}
             disabled={currentPage === 1}
-            className={`hidden sm:flex ${buttonClassName} ${currentPage === 1 ? disabledButtonClassName : activeButtonClassName}`}
+            className={`${buttonClassName} ${currentPage === 1 ? disabledButtonClassName : activeButtonClassName}`}
             aria-label="Go to first page"
           >
             <FiChevronsLeft className="h-4 w-4" />
@@ -92,12 +92,12 @@ export const Pagination = ({
           <FiChevronRight className="h-4 w-4" />
         </Button>
 
-        {/* Last page button - hidden on mobile */}
+        {/* Last page button - now visible on mobile too */}
         {firstLastButtons && (
           <Button
             onClick={() => onPageChange(totalPages)}
             disabled={currentPage === totalPages || totalPages === 0}
-            className={`hidden sm:flex ${buttonClassName} ${currentPage === totalPages || totalPages === 0 ? disabledButtonClassName : activeButtonClassName}`}
+            className={`${buttonClassName} ${currentPage === totalPages || totalPages === 0 ? disabledButtonClassName : activeButtonClassName}`}
             aria-label="Go to last page"
           >
             <FiChevronsRight className="h-4 w-4" />

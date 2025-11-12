@@ -1,5 +1,5 @@
 .login-page {
-  background: url("../../assets/images/gradient-background.jpg") no-repeat center center;
+  background: url("../../../public/images/gradient-background.jpg") no-repeat center center;
   background-size: cover;
   height: 100vh;
   display: flex;

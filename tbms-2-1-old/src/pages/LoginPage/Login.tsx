@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { useLoginUserMutation } from "../../services/authApi";
+import { useLazyGetProfileQuery } from "../../services/Common/profileGet";
 import { useNavigate } from "react-router-dom";
 import "./Login.css"; // Import the CSS file for styling
-import logo from "../../assets/images/logo-dark.png"; // Adjust the path for your logo
-import PageMeta from "../../components/common/PageMeta";
+import logo from "../../../public/images/logo-dark.png"; // Adjust the path for your logo
+import PageMeta from "../../features/common/components/page/PageMeta";
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -12,36 +13,48 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
 
   const [loginUser, { isLoading }] = useLoginUserMutation();
+  const [triggerProfile] = useLazyGetProfileQuery();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
     try {
+      localStorage.clear();
       const response = await loginUser({ username, password }).unwrap();
-      // Store the access token and user information
-      localStorage.setItem("access_token", response.access_token);
+      localStorage.setItem("token", response.access_token);
       localStorage.setItem("username", response.username);
       localStorage.setItem("email", response.email);
-      localStorage.setItem("token_expires_on", response.expires_on);
-      navigate("/home");
-    } catch (err: any) {
-      console.error("Login error:", err);
-      if (err?.data?.message) {
-        setError(err.data.message);
-      } else if (err?.status === 401) {
-        setError("Invalid credentials. Please try again.");
-      } else {
-        setError("An error occurred. Please try again.");
+      localStorage.setItem("AD", "false");
+
+      const profileResponse = await triggerProfile().unwrap();
+      if (profileResponse) {
+        // Save Module Name
+        if (profileResponse.moduleName) {
+          localStorage.setItem("ModuleName", profileResponse.moduleName);
+        }
+
+        // Save Profile Object
+        if (profileResponse.profile) {
+          localStorage.setItem(
+            "profile",
+            JSON.stringify(profileResponse.profile)
+          );
+        }
+
+        // Save Menu Array
+        if (profileResponse.menu && Array.isArray(profileResponse.menu)) {
+          localStorage.setItem("menu", JSON.stringify(profileResponse.menu));
+        }
       }
+
+      navigate("/home");
+    } catch (err) {
+      setError("Invalid credentials. Please try again.");
     }
   };
 
   return (
     <div className="login-page">
-        <PageMeta
-        title="Login"
-        description=""
-      />
+      <PageMeta title="Login" description="" />
       <div className="login-container">
         <div className="login-box">
           <img src={logo} alt="Logo" className="login-logo" />

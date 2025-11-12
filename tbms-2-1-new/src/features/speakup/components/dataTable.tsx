@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { FiChevronDown, FiChevronUp, FiPlus, FiMinus, FiMoreVertical, FiZap, FiAlertCircle, FiHelpCircle, FiFileText, FiStar, FiMessageSquare, FiTag, FiUserCheck } from 'react-icons/fi';
+import React, { useState, useEffect } from 'react';
+import { FiChevronDown, FiChevronUp, FiPlus, FiMinus, FiMoreVertical, FiAlertTriangle, FiHelpCircle, FiFileText, FiStar, FiMessageSquare, FiTag, FiUserCheck } from 'react-icons/fi';
+import { BsLightbulb } from 'react-icons/bs';
 import { Dropdown } from 'antd';
 import { SpeakUpActionMenu } from './SpeakUpActionMenu';
 import { SpeakUpMobileCard } from './SpeakUpMobileCard';
-import { SpeakUpExpandedDetails } from './SpeakUpExpandedDetails';
+import { SpeakUpEntryExpandedDetails } from './SpeakUpEntryExpandedDetails';
 import { MessageCell } from './MessageCell';
 import { useExpandedRows } from '../hooks/useExpandedRows';
 import type { SpeakUpItem } from '../types/speakupTypes';
@@ -43,6 +44,18 @@ export const SpeakUpTable: React.FC<SpeakUpTableProps> = ({
 }) => {
   const { expandedRows, toggleRowExpansion } = useExpandedRows();
   const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
+  const [windowWidth, setWindowWidth] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 1920);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Determine if expand button should be shown
+  // Anonymous is hidden on < lg (1024px), Attachment is hidden on < 2xl (1536px)
+  // Show expand button when there are fields to expand (i.e., when windowWidth < 2xl)
+  const showExpandButton = windowWidth < 1536; // < 2xl: Attachment is always hidden, Anonymous is hidden on < lg
 
   const getStatusColor = (status: string) => {
     const statusLower = status.toLowerCase();
@@ -73,9 +86,9 @@ export const SpeakUpTable: React.FC<SpeakUpTableProps> = ({
     const typeLower = type.toLowerCase();
     
     if (typeLower.includes('suggestion') || typeLower.includes('suggest')) {
-      return FiZap;
+      return BsLightbulb;
     } else if (typeLower.includes('complaint') || typeLower.includes('issue')) {
-      return FiAlertCircle;
+      return FiAlertTriangle;
     } else if (typeLower.includes('question') || typeLower.includes('query')) {
       return FiHelpCircle;
     } else if (typeLower.includes('feedback')) {
@@ -106,20 +119,40 @@ export const SpeakUpTable: React.FC<SpeakUpTableProps> = ({
     }
   };
 
-  const SortableHeader = ({ column, children, className = "", width = "", style }: { column: string; children: React.ReactNode; className?: string; width?: string; style?: React.CSSProperties }) => (
-    <th 
-      className={`px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${className} ${width}`}
-      onClick={() => onSort(column, sortColumn === column && sortDirection === 'asc' ? 'desc' : 'asc')}
-      style={style}
-    >
-      <div className="flex items-center gap-2">
-        {children}
-        {sortColumn === column && (
-          sortDirection === 'asc' ? <FiChevronUp className="w-4 h-4" /> : <FiChevronDown className="w-4 h-4" />
-        )}
-      </div>
-    </th>
-  );
+  const SortableHeader = ({ column, children, className = "", width = "", style }: { column: string; children: React.ReactNode; className?: string; width?: string; style?: React.CSSProperties }) => {
+    const isSorted = sortColumn === column;
+    return (
+      <th 
+        className={`px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group ${className} ${width}`}
+        onClick={() => onSort(column, isSorted && sortDirection === 'asc' ? 'desc' : 'asc')}
+        style={style}
+      >
+        <div className="flex items-center gap-1.5">
+          {children}
+          <span className="inline-flex flex-col leading-none ml-0.5">
+            <FiChevronUp
+              className={`h-3.5 w-3.5 transition-colors ${
+                isSorted
+                  ? sortDirection === 'asc'
+                    ? 'text-blue-600 dark:text-blue-400'
+                    : 'text-gray-300 dark:text-gray-500'
+                  : 'text-gray-300 group-hover:text-gray-400'
+              }`}
+            />
+            <FiChevronDown
+              className={`h-3.5 w-3.5 -mt-1 transition-colors ${
+                isSorted
+                  ? sortDirection === 'desc'
+                    ? 'text-blue-600 dark:text-blue-400'
+                    : 'text-gray-300 dark:text-gray-500'
+                  : 'text-gray-300 group-hover:text-gray-400'
+              }`}
+            />
+          </span>
+        </div>
+      </th>
+    );
+  };
 
   const handleEdit = (entry: SpeakUpItem) => {
     actionHandlers.onEdit && actionHandlers.onEdit(entry, "btnEdit");
@@ -177,7 +210,7 @@ export const SpeakUpTable: React.FC<SpeakUpTableProps> = ({
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden border border-gray-200 dark:border-gray-700">
       {/* Mobile Cards */}
-      <div className="md:hidden space-y-3.5 p-4">
+      <div className="md:hidden space-y-3 p-3 sm:p-4">
         {speakUpList.map((entry) => (
           <SpeakUpMobileCard
             key={entry.ID}
@@ -202,9 +235,11 @@ export const SpeakUpTable: React.FC<SpeakUpTableProps> = ({
         <table className="w-full table-auto divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-700">
             <tr>
-              <th scope="col" className="2xl:hidden px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" style={{ width: '48px' }} />
+              {showExpandButton && (
+                <th scope="col" className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider" style={{ width: '48px' }} />
+              )}
               <SortableHeader column="SpeakUpType" style={{ width: '140px' }}>Type</SortableHeader>
-              <SortableHeader column="Message" style={{ width: 'auto', minWidth: '350px' }}>Message</SortableHeader>
+              <SortableHeader column="Message">Message</SortableHeader>
               <SortableHeader column="isanonymous" className="hidden lg:table-cell" style={{ width: '110px' }}>Anonymous</SortableHeader>
               <SortableHeader column="Status" style={{ width: '140px' }}>Status</SortableHeader>
               <SortableHeader column="Attachment" className="hidden 2xl:table-cell" style={{ width: '120px' }}>Attachment</SortableHeader>
@@ -217,22 +252,24 @@ export const SpeakUpTable: React.FC<SpeakUpTableProps> = ({
             {speakUpList.map((entry) => (
               <React.Fragment key={entry.ID}>
                 <tr className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                  <td className="2xl:hidden px-4 py-3 whitespace-nowrap">
-                    <button
-                      onClick={() => toggleRowExpansion(entry.ID.toString())}
-                      className={`ml-2 p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                        expandedRows.has(entry.ID.toString())
-                          ? "border-red-500 text-red-500 dark:border-red-400 dark:text-red-400"
-                          : "border-blue-500 text-blue-500 dark:border-blue-400 dark:text-blue-400"
-                      } border`}
-                    >
-                      {expandedRows.has(entry.ID.toString()) ? (
-                        <FiMinus className="h-3 w-3" />
-                      ) : (
-                        <FiPlus className="h-3 w-3" />
-                      )}
-                    </button>
-                  </td>
+                  {showExpandButton && (
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <button
+                        onClick={() => toggleRowExpansion(entry.ID.toString())}
+                        className={`ml-2 p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 ${
+                          expandedRows.has(entry.ID.toString())
+                            ? "border-red-500 text-red-500 dark:border-red-400 dark:text-red-400"
+                            : "border-blue-500 text-blue-500 dark:border-blue-400 dark:text-blue-400"
+                        } border`}
+                      >
+                        {expandedRows.has(entry.ID.toString()) ? (
+                          <FiMinus className="h-3 w-3" />
+                        ) : (
+                          <FiPlus className="h-3 w-3" />
+                        )}
+                      </button>
+                    </td>
+                  )}
 
                   <td className="px-4 py-3 whitespace-nowrap">
                     <div className="flex items-center">
@@ -243,11 +280,11 @@ export const SpeakUpTable: React.FC<SpeakUpTableProps> = ({
                     </div>
                   </td>
 
-                  <td className="px-4 py-3" style={{ minWidth: '350px', width: 'auto' }}>
-                    <MessageCell 
-                      message={entry.Message} 
+                  <td className="px-4 py-3 whitespace-normal break-words max-w-[560px]">
+                    <MessageCell
+                      message={entry.Message}
                       maxLength={110}
-                      className="max-w-full"
+                      className="whitespace-normal break-words"
                     />
                   </td>
 
@@ -328,7 +365,7 @@ export const SpeakUpTable: React.FC<SpeakUpTableProps> = ({
                 </tr>
 
                 {expandedRows.has(entry.ID.toString()) && (
-                  <SpeakUpExpandedDetails entry={entry} />
+                  <SpeakUpEntryExpandedDetails entry={entry} />
                 )}
               </React.Fragment>
             ))}

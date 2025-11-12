@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal } from '../../../features/common/components/ui/modal';
-import { FiFileText, FiUser, FiTag, FiDownload, FiEdit, FiCheck, FiX, FiMessageSquare, FiClock, FiZap, FiAlertCircle, FiHelpCircle, FiStar } from 'react-icons/fi';
+import { FiFileText, FiUser, FiTag, FiDownload, FiEdit, FiCheck, FiX, FiMessageSquare, FiClock, FiAlertTriangle, FiHelpCircle, FiStar } from 'react-icons/fi';
+import { BsLightbulb } from 'react-icons/bs';
 import { MessageCell } from './MessageCell';
 import type { SpeakUpItem, SpeakUpHistoryEntry } from '../types/speakupTypes';
 import { useGetSpeakUpHistoryQuery } from '../../../services/Speakup/getHistory';
@@ -77,9 +78,9 @@ export const SpeakUpViewModal: React.FC<SpeakUpViewModalProps> = ({
     const typeLower = type.toLowerCase();
     
     if (typeLower.includes('suggestion') || typeLower.includes('suggest')) {
-      return FiZap;
+      return BsLightbulb;
     } else if (typeLower.includes('complaint') || typeLower.includes('issue')) {
-      return FiAlertCircle;
+      return FiAlertTriangle;
     } else if (typeLower.includes('question') || typeLower.includes('query')) {
       return FiHelpCircle;
     } else if (typeLower.includes('feedback')) {

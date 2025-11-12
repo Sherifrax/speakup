@@ -32,6 +32,9 @@ export const ActionModal = ({
 
   const isMobile = useMediaQuery({ maxWidth: 768 });
 
+  const primaryActionLabel =
+    actionType === ActionType.Cancel ? "Confirm Cancel" : actionType;
+
   useEffect(() => {
     if (isSuccess) setStatus(SaveStatus.Success);
     else if (isError) setStatus(SaveStatus.Error);
@@ -115,6 +118,7 @@ export const ActionModal = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
+      showCloseButton={false}
       className={`${isMobile ? "w-full mx-0 max-w-full" : "max-w-md"} rounded-xl shadow-2xl`}
     >
       <div className="p-6 bg-white dark:bg-gray-900 rounded-xl">
@@ -183,7 +187,7 @@ export const ActionModal = ({
                   <FiLoader className="animate-spin h-4 w-4" /> Processing...
                 </span>
               ) : (
-                actionType
+                primaryActionLabel
               )}
             </Button>
 

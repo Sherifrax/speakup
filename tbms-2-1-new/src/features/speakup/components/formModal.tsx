@@ -1,19 +1,18 @@
-import React from "react";
-import { FiCheck, FiLoader, FiX, FiUpload } from "react-icons/fi";
+import React, { useState, useRef, useEffect } from "react";
+import { FiCheck, FiLoader, FiX, FiUpload, FiChevronUp, FiChevronDown } from "react-icons/fi";
 import { Modal } from "../../../features/common/components/ui/modal";
 import Button from "../../../features/common/components/ui/button/Button";
 import { useMediaQuery } from "react-responsive";
-import { SpeakUpSaveParams } from "../types/speakupTypes";
+import { SpeakUpFormData } from "../types/speakupTypes";
 import { SaveStatus } from "../../common/types/status";
 import { KeyValuePair } from "../../common/types/commonTypes";
 
 interface FormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  formData: SpeakUpSaveParams;
-  onFormChange: (data: SpeakUpSaveParams) => void;
+  formData: SpeakUpFormData;
+  onFormChange: (data: SpeakUpFormData) => void;
   typeOptions: KeyValuePair[];
-  encryptedData: string;
   onSave: () => Promise<void>;
   saveStatus: SaveStatus;
   errors: Record<string, string>;
@@ -37,18 +36,62 @@ export const SpeakUpFormModal = ({
 }: FormModalProps) => {
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const MAX_MESSAGE_LENGTH = 1000;
+  const [isTypeDropdownOpen, setIsTypeDropdownOpen] = useState(false);
+  const typeDropdownRef = useRef<HTMLDivElement | null>(null);
+
+  // Close dropdown when clicking outside or when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setIsTypeDropdownOpen(false);
+      return;
+    }
+
+    const handleClickOutside = (event: MouseEvent) => {
+      if (typeDropdownRef.current && !typeDropdownRef.current.contains(event.target as Node)) {
+        setIsTypeDropdownOpen(false);
+      }
+    };
+
+    if (isTypeDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isTypeDropdownOpen, isOpen]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    if (name === "Message" && value.length > MAX_MESSAGE_LENGTH) {
-      return;
+    if (name === "Message") {
+      if (value.length > MAX_MESSAGE_LENGTH) {
+        return;
+      }
+      onFormChange({ ...formData, Message: value });
     }
-    onFormChange({ ...formData, [name]: value });
+  };
+
+  const handleTypeChange = (value: string | number) => {
+    onFormChange({ ...formData, TypeID: Number(value) });
+    setIsTypeDropdownOpen(false);
+  };
+
+  const getTypeDisplayText = () => {
+    const typeID = formData.TypeID || -1;
+    if (typeID === -1 || typeID === null || typeID === undefined) {
+      return '<--select-->';
+    }
+    const selectedType = typeOptions.find(type => String(type.key) === String(typeID));
+    return selectedType ? selectedType.value : '<--select-->';
+  };
+
+  const isTypePlaceholder = () => {
+    const typeID = formData.TypeID || -1;
+    return typeID === -1 || typeID === null || typeID === undefined;
   };
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
-    onFormChange({ ...formData, [name]: checked ? 1 : 0 });
+    if (name === "IsAnonymous") {
+      onFormChange({ ...formData, IsAnonymous: checked });
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,26 +157,79 @@ export const SpeakUpFormModal = ({
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Type <span className="text-red-500">*</span>
               </label>
-              <select
-                name="TypeID"
-                value={formData.TypeID || -1}
-                onChange={handleInputChange}
-                className={`w-full px-4 py-3 border rounded-lg dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 ${
-                  errors.TypeID 
-                    ? "border-red-500 dark:border-red-500 focus:ring-red-500 focus:border-red-500" 
-                    : "border-gray-300 dark:border-gray-700 focus:ring-blue-500 focus:border-blue-500"
-                }`}
-                disabled={isLoadingTypes}
-              >
-                <option value={-1}>&lt;--Select--&gt;</option>
-                {typeOptions
-                  .filter((type) => type.value.toLowerCase() !== 'all')
-                  .map((type) => (
-                    <option key={type.key} value={type.key}>
-                      {type.value}
-                    </option>
-                  ))}
-              </select>
+              <div className="relative" ref={typeDropdownRef}>
+                <button
+                  type="button"
+                  onClick={() => setIsTypeDropdownOpen(!isTypeDropdownOpen)}
+                  disabled={isLoadingTypes}
+                  className={`w-full p-3 pl-4 pr-5 text-sm border rounded-xl appearance-none transition text-left flex items-center justify-between ${
+                    isLoadingTypes
+                      ? 'border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-800 dark:border-gray-700 dark:text-gray-500'
+                      : errors.TypeID
+                      ? 'border-red-500 dark:border-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 cursor-pointer dark:bg-gray-800 dark:border-red-500'
+                      : 'border-gray-300 dark:bg-gray-800 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer'
+                  }`}
+                >
+                  <span className={
+                    isLoadingTypes 
+                      ? 'text-gray-400 dark:text-gray-500' 
+                      : isTypePlaceholder() 
+                        ? 'text-gray-500 dark:text-gray-400' 
+                        : 'text-gray-900 dark:text-white'
+                  }>
+                    {getTypeDisplayText()}
+                  </span>
+                  {isTypeDropdownOpen ? <FiChevronUp className="w-4 h-4" /> : <FiChevronDown className="w-4 h-4" />}
+                </button>
+                
+                {isTypeDropdownOpen && !isLoadingTypes && (
+                  <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto">
+                    {/* Select placeholder option */}
+                    <button
+                      key="select-placeholder"
+                      type="button"
+                      onClick={() => handleTypeChange(-1)}
+                      className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                        isTypePlaceholder()
+                          ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300' 
+                          : 'text-gray-700 dark:text-gray-300'
+                      }`}
+                    >
+                      &lt;--select--&gt;
+                    </button>
+                    {typeOptions
+                      .filter((type) => {
+                        if (!type || !type.value) return false;
+                        const valueLower = type.value.toLowerCase().trim();
+                        // Filter out placeholder values like "all", "select", etc.
+                        const isPlaceholder = 
+                          valueLower === 'all' || 
+                          valueLower === 'select' || 
+                          valueLower === '<--select-->' ||
+                          valueLower === '--select--' ||
+                          valueLower === 'select...' ||
+                          valueLower === '--select' ||
+                          valueLower === 'select--' ||
+                          /^[\s\-<>]*select[\s\-<>]*$/i.test(type.value.trim());
+                        return !isPlaceholder;
+                      })
+                      .map((type) => (
+                        <button
+                          key={type.key}
+                          type="button"
+                          onClick={() => handleTypeChange(type.key)}
+                          className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors ${
+                            String(formData.TypeID || -1) === String(type.key)
+                              ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-300' 
+                              : 'text-gray-700 dark:text-gray-300'
+                          }`}
+                        >
+                          {type.value}
+                        </button>
+                      ))}
+                  </div>
+                )}
+              </div>
               {errors.TypeID && (
                 <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.TypeID}</p>
               )}
@@ -210,7 +306,7 @@ export const SpeakUpFormModal = ({
               type="checkbox"
               id="IsAnonymous"
               name="IsAnonymous"
-              checked={formData.IsAnonymous === 1}
+              checked={formData.IsAnonymous}
               onChange={handleCheckboxChange}
               className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 border-gray-300 dark:bg-gray-700 dark:border-gray-600"
             />

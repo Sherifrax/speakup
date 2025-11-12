@@ -244,31 +244,14 @@ export const SpeakUpManagePage = () => {
           setIsFormOpen(false);
           resetForm();
         }}
-        formData={{
-          ID: formData.ID,
-          IsAnonymous: formData.IsAnonymous ? 1 : 0,
-          Attachment: formData.Attachment,
-          compID: formData.CompId,
-          TypeID: formData.TypeID,
-          Message: formData.Message,
-          encryptedData: "", // This should be set when editing
-          actionBy: editingEntryId ? "btnEdit" : "btnAdd",
-        }}
+        formData={formData}
         onFormChange={(data) => {
-          setFormData({
-            ID: data.ID,
-            Message: data.Message,
-            Attachment: data.Attachment,
-            IsAnonymous: data.IsAnonymous === 1,
-            TypeID: data.TypeID,
-            CompId: data.compID,
-          });
+          setFormData(data);
         }}
         onSave={handleSave}
         saveStatus={saveStatus}
         errors={errors}
         typeOptions={typeOptions}
-        encryptedData=""
         isLoadingTypes={isLoadingFilters}
         isLoadingEntry={isLoadingEntry}
         editingEntryId={editingEntryId}

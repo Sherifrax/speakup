@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ChevronDownIcon, HorizontaLDots } from "../assets/icons/general";
 import { useSidebar } from "../context/SidebarContext";
 import { ICONS } from "../constants/iconList";
 import { MenuItem } from "../features/common/types/commonTypes";
 import type { NavItem } from "../features/common/types/navigation";
+import { LuLogOut } from "react-icons/lu";
 
 const apiMenu: MenuItem[] = JSON.parse(localStorage.getItem("menu") || "[]");
 
@@ -22,6 +23,7 @@ const navItems: NavItem[] = apiMenu.map((m) => ({
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [openSubmenu, setOpenSubmenu] = useState<{
     type: "main";
@@ -213,6 +215,14 @@ const AppSidebar: React.FC = () => {
     </ul>
   );
 
+  const handleLogout = () => {
+    try {
+      localStorage.clear();
+    } finally {
+      navigate("/", { replace: true });
+    }
+  };
+
   return (
     <aside
       className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 
@@ -298,6 +308,21 @@ const AppSidebar: React.FC = () => {
             </div>
           </div>
         </nav>
+      </div>
+      <div className="mt-auto pb-6">
+        <button
+          onClick={handleLogout}
+          className={`menu-item group menu-item-inactive ${
+            !isExpanded && !isHovered ? "lg:justify-center" : "lg:justify-start"
+          }`}
+        >
+          <span className="menu-item-icon-size menu-item-icon-inactive">
+            <LuLogOut />
+          </span>
+          {(isExpanded || isHovered || isMobileOpen) && (
+            <span className="menu-item-text">Logout</span>
+          )}
+        </button>
       </div>
     </aside>
   );
