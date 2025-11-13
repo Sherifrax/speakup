@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FiChevronDown, FiChevronUp, FiPlus, FiMinus, FiMoreVertical, FiAlertTriangle, FiHelpCircle, FiFileText, FiStar, FiMessageSquare, FiTag, FiUserCheck } from 'react-icons/fi';
+import { FiChevronDown, FiChevronUp, FiPlus, FiMinus, FiMoreVertical, FiAlertTriangle, FiHelpCircle, FiFileText, FiStar, FiMessageSquare, FiTag, FiUserCheck, FiDownload } from 'react-icons/fi';
 import { BsLightbulb } from 'react-icons/bs';
 import { Dropdown } from 'antd';
 import { SpeakUpActionMenu } from './SpeakUpActionMenu';
@@ -7,6 +7,7 @@ import { SpeakUpMobileCard } from './SpeakUpMobileCard';
 import { SpeakUpEntryExpandedDetails } from './SpeakUpEntryExpandedDetails';
 import { MessageCell } from './MessageCell';
 import { useExpandedRows } from '../hooks/useExpandedRows';
+import { useDownloadAttachmentMutation } from '../../../services/Speakup/downloadAttachment';
 import type { SpeakUpItem } from '../types/speakupTypes';
 
 interface SpeakUpTableProps {
@@ -42,6 +43,30 @@ export const SpeakUpTable: React.FC<SpeakUpTableProps> = ({
   actionHandlers,
   isEndUser = true,
 }) => {
+  const [downloadAttachment, { isLoading: isDownloadingAttachment }] = useDownloadAttachmentMutation();
+
+  const handleDownloadAttachment = async (fileName: string, e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (!fileName) return;
+    
+    try {
+      const blob = await downloadAttachment({ fileName }).unwrap();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading attachment:", error);
+      alert("Failed to download attachment. Please try again.");
+    }
+  };
   const { expandedRows, toggleRowExpansion } = useExpandedRows();
   const [openDropdownId, setOpenDropdownId] = useState<number | null>(null);
   const [windowWidth, setWindowWidth] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 1920);
@@ -305,7 +330,7 @@ export const SpeakUpTable: React.FC<SpeakUpTableProps> = ({
                       </span>
                       {entry.Approver && (
                         <div 
-                          className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-blue-50/50 dark:bg-blue-900/10 border border-blue-200/30 dark:border-blue-800/30 rounded hover:bg-blue-50/70 dark:hover:bg-blue-900/20 transition-colors cursor-default"
+                          className="inline-flex items-center gap-1 px-1 py-0.5 cursor-default"
                           title={`Approver: ${entry.Approver}`}
                         >
                           <FiUserCheck className="w-2.5 h-2.5 text-blue-500 dark:text-blue-400 flex-shrink-0" />
@@ -319,15 +344,15 @@ export const SpeakUpTable: React.FC<SpeakUpTableProps> = ({
 
                   <td className="hidden 2xl:table-cell px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                     {entry.Attachment ? (
-                      <a
-                        href={entry.Attachment}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline"
+                      <button
+                        onClick={(e) => handleDownloadAttachment(entry.Attachment, e)}
+                        disabled={isDownloadingAttachment}
+                        className="text-blue-600 hover:underline disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                         title={entry.Attachment}
                       >
-                        View
-                      </a>
+                        <FiDownload className="w-3 h-3" />
+                        {isDownloadingAttachment ? "Downloading..." : "Download"}
+                      </button>
                     ) : (
                       <span className="text-gray-400">No Attachment</span>
                     )}

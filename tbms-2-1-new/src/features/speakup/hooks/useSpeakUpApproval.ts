@@ -42,14 +42,22 @@ export const useSpeakUpApproval = () => {
         CommonSearchString: filters.CommonSearchString ?? "",
       };
 
+      const paginationParams: PaginationParams = {
+        page: pagination.page !== undefined ? pagination.page : currentPage,
+        size: pagination.size || pageSize,
+      };
+
+      // Only include sortBy and sortOrder if they are explicitly provided
+      if (pagination.sortBy) {
+        paginationParams.sortBy = pagination.sortBy;
+      }
+      if (pagination.sortOrder) {
+        paginationParams.sortOrder = pagination.sortOrder;
+      }
+
       const params = {
         search: searchParams,
-        pagination: {
-          page: pagination.page !== undefined ? pagination.page : currentPage,
-          size: pagination.size || pageSize,
-          sortBy: pagination.sortBy || "ID",
-          sortOrder: pagination.sortOrder || "asc",
-        },
+        pagination: paginationParams,
       };
 
       const response: any = await searchSpeakUp(params).unwrap();

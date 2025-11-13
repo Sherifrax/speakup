@@ -1,6 +1,7 @@
-import { FiUser, FiPaperclip } from 'react-icons/fi';
+import { FiUser, FiPaperclip, FiDownload } from 'react-icons/fi';
 import { SpeakUpItem } from "../types/speakupTypes";
 import { useState, useEffect } from 'react';
+import { useDownloadAttachmentMutation } from '../../../services/Speakup/downloadAttachment';
 
 interface SpeakUpEntryExpandedDetailsProps {
   entry: SpeakUpItem;
@@ -8,6 +9,28 @@ interface SpeakUpEntryExpandedDetailsProps {
 
 export const SpeakUpEntryExpandedDetails = ({ entry }: SpeakUpEntryExpandedDetailsProps) => {
   const [windowWidth, setWindowWidth] = useState<number>(typeof window !== 'undefined' ? window.innerWidth : 1920);
+  const [downloadAttachment, { isLoading: isDownloadingAttachment }] = useDownloadAttachmentMutation();
+
+  const handleDownloadAttachment = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!entry.Attachment) return;
+    
+    try {
+      const blob = await downloadAttachment({ fileName: entry.Attachment }).unwrap();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = entry.Attachment;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error downloading attachment:", error);
+      alert("Failed to download attachment. Please try again.");
+    }
+  };
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -77,17 +100,20 @@ export const SpeakUpEntryExpandedDetails = ({ entry }: SpeakUpEntryExpandedDetai
                 </div>
                 <div className="text-sm text-gray-900 dark:text-white whitespace-normal break-words">
                   {entry.Attachment ? (
-                    <a
-                      href={entry.Attachment}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 dark:text-blue-400 hover:underline break-all"
+                    <button
+                      onClick={handleDownloadAttachment}
+                      disabled={isDownloadingAttachment}
+                      className="text-blue-600 dark:text-blue-400 hover:underline break-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
                       title={entry.Attachment}
                     >
-                      {entry.Attachment.length > 50 
-                        ? `${entry.Attachment.substring(0, 50)}...` 
-                        : entry.Attachment}
-                    </a>
+                      <FiDownload className="w-3 h-3 flex-shrink-0" />
+                      <span>
+                        {entry.Attachment.length > 50 
+                          ? `${entry.Attachment.substring(0, 50)}...` 
+                          : entry.Attachment}
+                      </span>
+                      {isDownloadingAttachment && <span className="text-xs">(Downloading...)</span>}
+                    </button>
                   ) : (
                     <span className="text-gray-400 dark:text-gray-500">No Attachment</span>
                   )}

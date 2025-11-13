@@ -3,21 +3,41 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ChevronDownIcon, HorizontaLDots } from "../assets/icons/general";
 import { useSidebar } from "../context/SidebarContext";
 import { ICONS } from "../constants/iconList";
-import { MenuItem } from "../features/common/types/commonTypes";
+import { ModuleMenu } from "../features/common/types/commonTypes";
 import type { NavItem } from "../features/common/types/navigation";
 import { LuLogOut } from "react-icons/lu";
 
-const apiMenu: MenuItem[] = JSON.parse(localStorage.getItem("menu") || "[]");
+const apiModules: ModuleMenu[] = JSON.parse(localStorage.getItem("menu") || "[]");
 
-// Convert API MenuItem[] → NavItem[]
-const navItems: NavItem[] = apiMenu.map((m) => ({
-  name: m.MenuName,
-  icon: (() => {
-    const IconComponent = ICONS[m.IconName as keyof typeof ICONS] || ICONS.Grid;
-    return <IconComponent />;
-  })(),
-  path: m.Url,
-}));
+// Convert API ModuleMenu[] → NavItem[]
+const navItems: NavItem[] = apiModules.map((module) => {
+  const legacyMenu = module as unknown as {
+    menuName?: string;
+    iconName?: string;
+    url?: string;
+  };
+
+  const subMenuItems = Array.isArray(module.subMenu) ? module.subMenu : [];
+  const iconKey = subMenuItems[0]?.iconName || legacyMenu.iconName;
+  const defaultPath = subMenuItems[0]?.url || legacyMenu.url;
+
+  return {
+    name: module.moduleName || legacyMenu.menuName || "",
+    icon: (() => {
+      const IconComponent =
+        (iconKey && ICONS[iconKey as keyof typeof ICONS]) || ICONS.Grid;
+      return <IconComponent />;
+    })(),
+    path: defaultPath,
+    subItems:
+      subMenuItems.length > 0
+        ? subMenuItems.map((sub) => ({
+            name: sub.subMenuName,
+            path: sub.url,
+          }))
+        : undefined,
+  };
+});
 
 
 const AppSidebar: React.FC = () => {

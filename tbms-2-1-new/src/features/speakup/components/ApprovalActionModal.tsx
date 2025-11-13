@@ -168,7 +168,7 @@ export const ApprovalActionModal = ({
         {/* Header */}
         <div className="flex justify-between items-center mb-5 pb-3 border-b border-gray-200 dark:border-gray-700">
           <h2 className={`text-2xl font-bold ${titleColor}`}>
-            {actionType} SpeakUp
+            {actionType} Request
           </h2>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-800 dark:hover:text-gray-200">
             <FiX className="h-6 w-6" />

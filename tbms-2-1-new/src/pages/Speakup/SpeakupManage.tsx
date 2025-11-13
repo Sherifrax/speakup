@@ -5,7 +5,6 @@ import { useSpeakUp } from "../../features/speakup/hooks/useSpeakUp";
 import { useSpeakUpFilters } from "../../features/speakup/hooks/useSpeakUpFilters";
 import { SpeakUpFilter } from "../../features/speakup/components/dataFilters";
 import { SpeakUpFormModal } from "../../features/speakup/components/formModal";
-import { SpeakUpViewModal } from "../../features/speakup/components/SpeakUpViewModal";
 import { HistoryModal } from "../../features/speakup/components/HistoryModal";
 import { Toolbar } from "../../features/speakup/components/toolBar";
 import { SpeakUpTable } from "../../features/speakup/components/dataTable";
@@ -63,8 +62,10 @@ export const SpeakUpManagePage = () => {
       {
         page: currentPage,
         size: pageSize,
-        sortBy: sortColumn || "id",
-        sortOrder: sortDirection,
+        ...(sortColumn && {
+          sortBy: sortColumn,
+          sortOrder: sortDirection,
+        }),
       }
     );
   }, [searchQuery, filters, currentPage, pageSize, sortColumn, sortDirection]);
@@ -165,17 +166,17 @@ export const SpeakUpManagePage = () => {
       <PageMeta title="Speak Up" description="Speak Up Entry" />
       
       {/* Page Title Section */}
-      <div className="mb-8 pt-6">
+      <div className="mb-6 pt-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              Speak Up Entry
+            <h1 className="block text-[32px] font-extrabold leading-[39px] text-[rgb(0,5,54)] font-montserrat mb-0">
+              Speak Up
             </h1>
           </div>
         </div>
       </div>
       
-      <ComponentCard title="Track Speak Up entries and submissions" className="shadow-xl rounded-2xl border border-gray-200 dark:border-gray-700">
+      <ComponentCard title="Track Speak Up entries and submissions"                 className="shadow-xl rounded-3xl border border-gray-200 dark:border-gray-700 bg-white/10 dark:bg-gray-900/10">
         <div className="space-y-6 relative p-6">
           {/* Toolbar */}
           <Toolbar
@@ -255,13 +256,6 @@ export const SpeakUpManagePage = () => {
         isLoadingTypes={isLoadingFilters}
         isLoadingEntry={isLoadingEntry}
         editingEntryId={editingEntryId}
-      />
-
-      {/* View Modal */}
-      <SpeakUpViewModal
-        isOpen={isViewOpen}
-        onClose={closeViewModal}
-        entry={selectedEntry}
       />
 
       {/* History Modal */}

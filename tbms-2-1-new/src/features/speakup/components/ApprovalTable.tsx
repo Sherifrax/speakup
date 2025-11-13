@@ -312,7 +312,7 @@ export const ApprovalTable: React.FC<ApprovalTableProps> = ({
                       </span>
                       {entry.Approver && (
                         <div 
-                          className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-blue-50/50 dark:bg-blue-900/10 border border-blue-200/30 dark:border-blue-800/30 rounded hover:bg-blue-50/70 dark:hover:bg-blue-900/20 transition-colors cursor-default"
+                          className="inline-flex items-center gap-1 px-1 py-0.5 cursor-default"
                           title={`Approver: ${entry.Approver}`}
                         >
                           <FiUserCheck className="w-2.5 h-2.5 text-blue-500 dark:text-blue-400 flex-shrink-0" />

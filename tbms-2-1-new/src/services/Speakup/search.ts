@@ -11,12 +11,18 @@ export const speakUpSearch = apiService.injectEndpoints({
       { search: SpeakUpSearchRequest; pagination: PaginationParams }
     >({
       query: ({ search, pagination }) => {
-        const params = {
+        const params: Record<string, any> = {
           page: pagination.page ?? 1,
           size: pagination.size ?? 10,
-          sortBy: pagination.sortBy ?? "id",
-          sortOrder: pagination.sortOrder ?? "asc",
         };
+
+        // Only include sortBy and sortOrder if they are explicitly provided
+        if (pagination.sortBy) {
+          params.sortBy = pagination.sortBy;
+        }
+        if (pagination.sortOrder) {
+          params.sortOrder = pagination.sortOrder;
+        }
 
         return {
           url: baseModule.speakup + speakupUrls.SearchManage,

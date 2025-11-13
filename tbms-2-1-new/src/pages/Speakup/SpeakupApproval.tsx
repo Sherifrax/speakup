@@ -51,8 +51,10 @@ export const SpeakUpApprovalPage = () => {
       {
         page: currentPage,
         size: pageSize,
-        sortBy: sortColumn || "ID",
-        sortOrder: sortDirection,
+        ...(sortColumn && {
+          sortBy: sortColumn,
+          sortOrder: sortDirection,
+        }),
       }
     );
   }, [searchQuery, filters, currentPage, pageSize, sortColumn, sortDirection]);
@@ -143,8 +145,10 @@ export const SpeakUpApprovalPage = () => {
       {
         page: currentPage,
         size: pageSize,
-        sortBy: sortColumn || "ID",
-        sortOrder: sortDirection,
+        ...(sortColumn && {
+          sortBy: sortColumn,
+          sortOrder: sortDirection,
+        }),
       }
     );
   };
@@ -156,17 +160,18 @@ export const SpeakUpApprovalPage = () => {
       <PageMeta title="Speak Up Approval" description="Speak Up Approval" />
       
       {/* Page Title Section */}
-      <div className="mb-8 pt-6">
+      <div className="mb-6 pt-6">
         <div className="flex items-center justify-between">
         <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              Speak Up Approval
+            <h1 className="block text-[32px] font-extrabold leading-[39px] text-[rgb(0,5,54)] font-montserrat mb-0">
+              Speak Up (Approvals)
             </h1>
           </div>
         </div>
       </div>
       
-      <ComponentCard title="Approve or reject Speak Up entries assigned to you" className="shadow-xl rounded-2xl border border-gray-200 dark:border-gray-700">
+      <ComponentCard title="Approve or reject Speak Up entries assigned to you"   className="shadow-xl rounded-3xl border border-gray-200 dark:border-gray-700 bg-white/10 dark:bg-gray-900/10"
+      >
         <div className="space-y-6 relative p-6">
           {/* Toolbar */}
           <Toolbar

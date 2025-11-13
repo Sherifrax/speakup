@@ -125,20 +125,25 @@ export const ApprovalMobileCard: React.FC<ApprovalMobileCardProps> = ({
       <div className="relative p-3.5 sm:p-4">
         {/* Header Row: Type Icon, Title, and Expand Button */}
         <div className="flex items-start justify-between mb-3 gap-2.5">
-          <div className="flex items-center gap-2.5 flex-1 min-w-0 pr-2">
+          <div className="flex items-center gap-2.5 flex-1 min-w-0">
             <div className={`flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-lg ${getTypeIconBgColor(entry.SpeakUpType)} shadow-sm ring-1 ring-gray-200/50 dark:ring-gray-700/50 flex-shrink-0`}>
               <TypeIcon className={`w-4 h-4 sm:w-5 sm:h-5 ${getTypeIconColor(entry.SpeakUpType)}`} />
             </div>
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 overflow-hidden">
               <h3 className="font-bold text-gray-900 dark:text-white text-sm sm:text-base mb-1.5 truncate leading-tight">
                 {entry.SpeakUpType || 'N/A'}
               </h3>
               <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
-                <span className={`inline-flex items-center px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-md border ${getStatusColor(entry.Status)} shadow-sm whitespace-nowrap`}>
-                  {entry.Status}
+                <span 
+                  className={`inline-flex items-center px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-md border ${getStatusColor(entry.Status)} shadow-sm max-w-[180px] sm:max-w-[220px] md:max-w-[260px] overflow-hidden`}
+                  title={entry.Status}
+                >
+                  <span className="truncate">
+                    {entry.Status}
+                  </span>
                 </span>
                 {entry.Approver && (
-                  <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-gradient-to-r from-blue-50 to-indigo-50/80 dark:from-blue-900/25 dark:to-indigo-900/20 border border-blue-200/60 dark:border-blue-800/50 rounded-md flex-shrink-0">
+                  <div className="inline-flex items-center gap-0.5 px-0.5 py-0 flex-shrink-0">
                     <FiUserCheck className="w-2.5 h-2.5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
                     <span className="text-[9px] sm:text-[10px] font-medium text-blue-700 dark:text-blue-300 truncate max-w-[100px] sm:max-w-[120px]" title={entry.Approver}>
                       {entry.Approver}
@@ -159,7 +164,7 @@ export const ApprovalMobileCard: React.FC<ApprovalMobileCardProps> = ({
           </div>
           
           <button
-            className={`relative flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-lg border-2 transition-all duration-300 flex items-center justify-center active:scale-95 ${
+            className={`relative flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-lg border-2 transition-all duration-300 flex items-center justify-center active:scale-95 ml-2 ${
               isExpanded
                 ? "border-red-400 text-red-600 dark:border-red-400 dark:text-red-400 bg-gradient-to-br from-red-50 to-red-100/50 dark:from-red-950/40 dark:to-red-900/20 shadow-md shadow-red-200/50 dark:shadow-red-900/30"
                 : "border-blue-400 text-blue-600 dark:border-blue-400 dark:text-blue-400 bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/40 dark:to-blue-900/20 hover:shadow-md hover:shadow-blue-200/50 dark:hover:shadow-blue-900/30"
@@ -306,17 +311,24 @@ export const ApprovalMobileCard: React.FC<ApprovalMobileCardProps> = ({
             )}
 
             {/* Status - Full Width */}
-            <div className="p-3 sm:p-4 rounded-lg bg-white/80 dark:bg-gray-700/30 border border-gray-200/60 dark:border-gray-700/60 hover:bg-white dark:hover:bg-gray-700/40 hover:shadow-sm transition-all duration-200">
-              <div className="flex items-center justify-between gap-2 mb-2">
-                <div className="text-[10px] sm:text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+            <div className="p-3 sm:p-4 rounded-lg bg-white/80 dark:bg-gray-700/30 border border-gray-200/60 dark:border-gray-700/60 hover:bg-white dark:hover:bg-gray-700/40 hover:shadow-sm transition-all duration-200 overflow-hidden">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="text-[10px] sm:text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide flex-shrink-0">
                   Status
                 </div>
-                <span className={`inline-flex items-center px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-xs font-medium rounded-md border ${getStatusColor(entry.Status)} shadow-sm whitespace-nowrap`}>
-                  {entry.Status}
-                </span>
+              </div>
+              <div className="mb-2 min-w-0">
+                <div 
+                  className={`inline-flex items-center px-2 py-0.5 sm:px-2.5 sm:py-1 text-[10px] sm:text-xs font-medium rounded-md border ${getStatusColor(entry.Status)} shadow-sm max-w-full min-w-0`}
+                  title={entry.Status}
+                >
+                  <span className="truncate min-w-0">
+                    {entry.Status}
+                  </span>
+                </div>
               </div>
               {entry.Approver && (
-                <div className="flex items-center gap-1.5 px-2 py-1 bg-gradient-to-r from-blue-50 to-indigo-50/80 dark:from-blue-900/25 dark:to-indigo-900/20 border border-blue-200/60 dark:border-blue-800/50 rounded-md">
+                <div className="flex items-center gap-0.5 px-0.5 py-0.5">
                   <FiUserCheck className="w-2.5 h-2.5 text-blue-600 dark:text-blue-400 flex-shrink-0" />
                   <span className="text-[9px] sm:text-[10px] font-medium text-blue-700 dark:text-blue-300 truncate" title={entry.Approver}>
                     {entry.Approver}

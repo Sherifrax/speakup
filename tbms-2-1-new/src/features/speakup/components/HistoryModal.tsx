@@ -31,24 +31,21 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
     >
       <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-4 border-b border-blue-400 dark:border-blue-500">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-white/20 rounded-lg">
-                <FiClock className="w-5 h-5 text-white" />
+        <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-4 sm:px-6 md:px-8 py-4 sm:py-5 border-b border-blue-400 dark:border-blue-500">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-center gap-3 sm:gap-4">
+              <div className="p-2 sm:p-2.5 bg-white/20 rounded-lg">
+                <FiClock className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
-              <div>
-                <h2 className="text-xl font-semibold text-white">History</h2>
-                <p className="text-blue-100 text-sm">
-                  Action history for SpeakUp #{entry?.ID}
-                </p>
-              </div>
+              <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-white tracking-tight">
+                History
+              </h2>
             </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-white/20 rounded-lg transition-colors"
+              className="p-2 sm:p-2.5 hover:bg-white/20 rounded-lg transition-colors"
             >
-              <FiX className="w-5 h-5 text-white" />
+              <FiX className="w-5 h-5 sm:w-5 sm:h-5 text-white" />
             </button>
           </div>
         </div>

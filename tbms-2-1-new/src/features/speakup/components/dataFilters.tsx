@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useMediaQuery } from 'react-responsive';
-import { FiFilter, FiX, FiChevronUp, FiChevronDown } from 'react-icons/fi';
+import { FiX, FiChevronUp, FiChevronDown } from 'react-icons/fi';
 import Button from '../../../features/common/components/ui/button';
 import { SpeakUpSearchParams } from '../types/speakupTypes';
 import { KeyValuePair } from '../../common/types/commonTypes';
@@ -243,19 +243,12 @@ export const SpeakUpFilter: React.FC<SpeakUpFilterProps> = ({
       />
 
       {isMobile ? (
-        <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-900 shadow-2xl z-[9999] rounded-t-3xl flex flex-col max-h-[85vh] transform transition-transform duration-300 ease-out">
-          <div className="flex justify-center pt-3">
-            <div className="w-12 h-1.5 bg-gray-300 dark:bg-gray-700 rounded-full" />
-          </div>
-
+        <div className="fixed inset-x-0 top-12 bottom-0 bg-white dark:bg-gray-900 shadow-2xl z-[9999] flex flex-col transform transition-transform duration-300 ease-out rounded-t-3xl">
           <div className="p-5 border-b border-gray-200 dark:border-gray-700 sticky top-0 dark:bg-gray-900 z-10">
             <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <FiFilter className="text-blue-500 w-5 h-5" />
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                  Filter Speak Up
-                </h3>
-              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                Filters
+              </h3>
               <button
                 onClick={onClose}
                 className="text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors p-1 -mr-1"
@@ -295,15 +288,12 @@ export const SpeakUpFilter: React.FC<SpeakUpFilterProps> = ({
           {FilterButtons}
         </div>
       ) : (
-        <div className="fixed top-14 right-0 h-[calc(99%-3rem)] w-96 bg-white dark:bg-gray-900 shadow-2xl transition-transform duration-300 ease-in-out z-[9999] rounded-l-2xl border-l border-gray-200 dark:border-gray-800 flex flex-col">
+        <div className="fixed bottom-0 right-0  w-96 h-screen max-h-screen bg-white dark:bg-gray-900 shadow-2xl transition-transform duration-300 ease-in-out z-[9999] border-l border-gray-200 dark:border-gray-800 flex flex-col">
           <div className="p-6 border-b border-gray-200 dark:border-gray-700">
             <div className="flex justify-between items-center">
-              <div className="flex items-center gap-3">
-                <FiFilter className="text-blue-500 w-6 h-6" />
-                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  Advanced Filters
-                </h3>
-              </div>
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Filters
+              </h3>
               <button
                 onClick={onClose}
                 className="text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors p-1 -mr-1"

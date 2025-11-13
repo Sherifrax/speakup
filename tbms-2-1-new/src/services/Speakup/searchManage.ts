@@ -20,12 +20,18 @@ export const speakupManageSearch = apiService.injectEndpoints({
           TypeID: sanitizeNumber(search.TypeID),
           CommonSearchString: sanitizeString(search.CommonSearchString),
         };
-        const params = {
+        const params: Record<string, any> = {
           page: pagination.page ?? 1,
           size: pagination.size ?? 10,
-          sortBy: pagination.sortBy ?? "ID",
-          sortOrder: pagination.sortOrder ?? "asc",
         };
+
+        // Only include sortBy and sortOrder if they are explicitly provided
+        if (pagination.sortBy) {
+          params.sortBy = pagination.sortBy;
+        }
+        if (pagination.sortOrder) {
+          params.sortOrder = pagination.sortOrder;
+        }
 
         const body = { params: postFilters };
 

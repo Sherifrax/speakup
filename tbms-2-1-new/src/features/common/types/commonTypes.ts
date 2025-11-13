@@ -1,21 +1,28 @@
 // CommonTypes.ts
 export interface Profile {
-  EmployeeName: string;
-  Designation: string;
-  Email: string;
-  ProfilePhoto: string;
+  employeeName: string;
+  designation: string;
+  email: string;
+  profilePhoto: string;
 }
 
-export interface MenuItem {
-  MenuName: string;
-  IconName: string;
-  Url: string;
+export interface SubMenuItem {
+  subMenuId: string;
+  subMenuName: string;
+  iconName: string;
+  url: string;
+}
+
+export interface ModuleMenu {
+  menuId: string;
+  moduleName: string;
+  subMenu?: SubMenuItem[];
 }
 
 export interface ProfileResponse {
-  profile: Profile;
-  menu: MenuItem[];
-  moduleName: string;
+  profile?: Profile;
+  modules?: ModuleMenu[];
+  moduleName?: string;
 }
 
 export type SortDirection = "asc" | "desc";

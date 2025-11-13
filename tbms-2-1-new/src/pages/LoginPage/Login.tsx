@@ -41,8 +41,8 @@ const Login: React.FC = () => {
         }
 
         // Save Menu Array
-        if (profileResponse.menu && Array.isArray(profileResponse.menu)) {
-          localStorage.setItem("menu", JSON.stringify(profileResponse.menu));
+        if (profileResponse.modules && Array.isArray(profileResponse.modules)) {
+          localStorage.setItem("menu", JSON.stringify(profileResponse.modules));
         }
       }
 

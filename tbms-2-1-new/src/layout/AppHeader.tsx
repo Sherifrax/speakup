@@ -6,20 +6,40 @@ import UserInfoCard from "../features/common/components/header/UserInfoCard";
 import { LuArrowLeftToLine, LuArrowRightToLine } from "react-icons/lu";
 import { Dropdown } from "../features/common/components/ui/dropdown/Dropdown";
 import { ICONS } from "../constants/iconList";
-import { MenuItem } from "../features/common/types/commonTypes";
+import { ModuleMenu } from "../features/common/types/commonTypes";
 import type { NavItem } from "../features/common/types/navigation";
 
-const apiMenu: MenuItem[] = JSON.parse(localStorage.getItem("menu") || "[]");
+const apiModules: ModuleMenu[] = JSON.parse(localStorage.getItem("menu") || "[]");
 
-// Convert API MenuItem[] → NavItem[]
-const navItems: NavItem[] = apiMenu.map((m) => ({
-  name: m.MenuName,
-  icon: (() => {
-    const IconComponent = ICONS[m.IconName as keyof typeof ICONS] || ICONS.Grid;
-    return <IconComponent />;
-  })(),
-  path: m.Url,
-}));
+// Convert API ModuleMenu[] → NavItem[]
+const navItems: NavItem[] = apiModules.map((module) => {
+  const legacyMenu = module as unknown as {
+    menuName?: string;
+    iconName?: string;
+    url?: string;
+  };
+
+  const subMenuItems = Array.isArray(module.subMenu) ? module.subMenu : [];
+  const iconKey = subMenuItems[0]?.iconName || legacyMenu.iconName;
+  const defaultPath = subMenuItems[0]?.url || legacyMenu.url;
+
+  return {
+    name: module.moduleName || legacyMenu.menuName || "",
+    icon: (() => {
+      const IconComponent =
+        (iconKey && ICONS[iconKey as keyof typeof ICONS]) || ICONS.Grid;
+      return <IconComponent />;
+    })(),
+    path: defaultPath,
+    subItems:
+      subMenuItems.length > 0
+        ? subMenuItems.map((sub) => ({
+            name: sub.subMenuName,
+            path: sub.url,
+          }))
+        : undefined,
+  };
+});
 
 const AppHeader: React.FC = () => {
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
@@ -82,7 +102,7 @@ const AppHeader: React.FC = () => {
   }, []);
 
   return (
-    <header className="sticky top-0 flex w-full bg-transparent border-b-2 border-white shadow-[0_1px_4px_rgba(255,255,255,0.3)] z-[9999] backdrop-blur-none">
+    <header className="sticky top-0 flex w-full bg-transparent border-b-2 border-white shadow-[0_1px_4px_rgba(255,255,255,0.3)] z-[9999] backdrop-blur-none flex-shrink-0">
       <div className="flex flex-col items-center justify-between flex-grow lg:flex-row lg:px-6">
         <div className="relative flex items-center justify-between w-full gap-2 px-3 py-3 border-b border-gray-200 dark:border-gray-800 sm:gap-4 lg:justify-normal lg:border-b-0 lg:px-0 lg:py-4">
           {/* Sidebar Toggle - Top Left on Mobile */}

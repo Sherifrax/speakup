@@ -6,6 +6,75 @@ import { useMediaQuery } from "react-responsive";
 import { SpeakUpFormData } from "../types/speakupTypes";
 import { SaveStatus } from "../../common/types/status";
 import { KeyValuePair } from "../../common/types/commonTypes";
+import {
+  useUploadDocumentMutation,
+  UploadDocumentResponse,
+} from "../../../services/Common/uploadDocument";
+
+const SUPPORTED_FILE_EXTENSIONS = [
+  "pdf",
+  "jpg",
+  "jpeg",
+  "png",
+  "doc",
+  "docx",
+  "xls",
+  "xlsx",
+  "ppt",
+  "pptx",
+  "txt",
+];
+
+const FILE_NAME_PATTERN = new RegExp(
+  `([\\w.-]+\\.(?:${SUPPORTED_FILE_EXTENSIONS.join("|")}))`,
+  "gi"
+);
+
+const isRecognizedFileName = (value: string): boolean => {
+  const normalized = value.trim().toLowerCase();
+  return SUPPORTED_FILE_EXTENSIONS.some((ext) =>
+    normalized.endsWith(`.${ext}`)
+  );
+};
+
+const extractFileNameCandidate = (input: unknown): string | null => {
+  if (!input) return null;
+
+  if (typeof input === "string") {
+    const trimmed = input.trim();
+    if (isRecognizedFileName(trimmed)) {
+      return trimmed;
+    }
+    const matches = trimmed.match(FILE_NAME_PATTERN);
+    if (matches && matches.length > 0) {
+      return matches[matches.length - 1].trim();
+    }
+    return null;
+  }
+
+  if (Array.isArray(input)) {
+    for (const item of input) {
+      const result = extractFileNameCandidate(item);
+      if (result) return result;
+    }
+    return null;
+  }
+
+  if (typeof input === "object") {
+    for (const value of Object.values(input as Record<string, unknown>)) {
+      const result = extractFileNameCandidate(value);
+      if (result) return result;
+    }
+  }
+
+  return null;
+};
+
+const extractFileNameFromUploadResponse = (
+  response: UploadDocumentResponse | string
+): string | null => {
+  return extractFileNameCandidate(response);
+};
 
 interface FormModalProps {
   isOpen: boolean;
@@ -38,6 +107,9 @@ export const SpeakUpFormModal = ({
   const MAX_MESSAGE_LENGTH = 1000;
   const [isTypeDropdownOpen, setIsTypeDropdownOpen] = useState(false);
   const typeDropdownRef = useRef<HTMLDivElement | null>(null);
+  const [uploadDocument] = useUploadDocumentMutation();
+  const [uploadStatus, setUploadStatus] = useState<"idle" | "uploading" | "success" | "error">("idle");
+  const [selectedFileName, setSelectedFileName] = useState<string>("");
 
   // Close dropdown when clicking outside or when modal closes
   useEffect(() => {
@@ -94,7 +166,7 @@ export const SpeakUpFormModal = ({
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       // Validate file size (10MB limit)
@@ -111,7 +183,29 @@ export const SpeakUpFormModal = ({
         return;
       }
       
-      onFormChange({ ...formData, Attachment: file.name });
+      setSelectedFileName(file.name);
+      setUploadStatus("uploading");
+      
+      try {
+        const response = await uploadDocument(file).unwrap();
+        const extractedFileName =
+          extractFileNameFromUploadResponse(response) || file.name;
+        const normalizedFileName = extractedFileName.trim();
+        onFormChange({ ...formData, Attachment: normalizedFileName });
+        setSelectedFileName(normalizedFileName);
+        setUploadStatus("success");
+        // Reset status after 2 seconds
+        setTimeout(() => setUploadStatus("idle"), 2000);
+      } catch (error) {
+        console.error("Error uploading file:", error);
+        setUploadStatus("error");
+        alert("Failed to upload file. Please try again.");
+        // Clear the file input
+        if (e.target) {
+          e.target.value = "";
+        }
+        setSelectedFileName("");
+      }
     }
   };
 
@@ -132,7 +226,7 @@ export const SpeakUpFormModal = ({
       <div className="p-6 bg-white dark:bg-gray-900 rounded-xl">
         <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-            {editingEntryId ? 'Edit Speak Up Entry' : 'Create New Speak Up Entry'}
+            {editingEntryId ? 'Edit Request' : 'Add Request'}
           </h2>
           <button
             onClick={onClose}
@@ -279,15 +373,48 @@ export const SpeakUpFormModal = ({
                 onChange={handleFileChange}
                 accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
                 className="hidden"
+                disabled={uploadStatus === "uploading"}
               />
               <label
                 htmlFor="attachment"
-                className="flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg cursor-pointer hover:border-blue-500 dark:hover:border-blue-400 transition-colors"
+                className={`flex items-center justify-center w-full px-4 py-3 border-2 border-dashed rounded-lg transition-colors ${
+                  uploadStatus === "uploading"
+                    ? "border-blue-400 dark:border-blue-500 cursor-wait bg-blue-50 dark:bg-blue-900/20"
+                    : uploadStatus === "success"
+                    ? "border-green-400 dark:border-green-500 bg-green-50 dark:bg-green-900/20"
+                    : uploadStatus === "error"
+                    ? "border-red-400 dark:border-red-500 bg-red-50 dark:bg-red-900/20"
+                    : "border-gray-300 dark:border-gray-600 cursor-pointer hover:border-blue-500 dark:hover:border-blue-400"
+                }`}
               >
                 <div className="flex flex-col items-center">
-                  <FiUpload className="h-8 w-8 text-gray-400 dark:text-gray-500 mb-2" />
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
-                    {formData.Attachment ? formData.Attachment : "Choose file or drag and drop"}
+                  {uploadStatus === "uploading" ? (
+                    <FiLoader className="h-8 w-8 text-blue-500 dark:text-blue-400 mb-2 animate-spin" />
+                  ) : uploadStatus === "success" ? (
+                    <FiCheck className="h-8 w-8 text-green-500 dark:text-green-400 mb-2" />
+                  ) : (
+                    <FiUpload className="h-8 w-8 text-gray-400 dark:text-gray-500 mb-2" />
+                  )}
+                  <span className={`text-sm ${
+                    uploadStatus === "uploading"
+                      ? "text-blue-600 dark:text-blue-400"
+                      : uploadStatus === "success"
+                      ? "text-green-600 dark:text-green-400"
+                      : uploadStatus === "error"
+                      ? "text-red-600 dark:text-red-400"
+                      : "text-gray-600 dark:text-gray-400"
+                  }`}>
+                    {uploadStatus === "uploading"
+                      ? `Uploading ${selectedFileName || "file"}...`
+                      : uploadStatus === "success"
+                      ? `Uploaded: ${formData.Attachment || selectedFileName}`
+                      : uploadStatus === "error"
+                      ? "Upload failed. Click to try again."
+                      : formData.Attachment
+                      ? formData.Attachment
+                      : selectedFileName
+                      ? selectedFileName
+                      : "Choose file or drag and drop"}
                   </span>
                   <span className="text-xs text-gray-500 dark:text-gray-500 mt-1">
                     PDF, JPG, PNG, DOC, DOCX (Max 10MB)

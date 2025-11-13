@@ -67,24 +67,27 @@ export const useSpeakUp = () => {
         CommonSearchString: filters.CommonSearchString ?? "",
       };
 
+      const paginationParams: PaginationParams = {
+        page: pagination.page !== undefined ? pagination.page : currentPage,
+        size: pagination.size || pageSize,
+      };
+
+      // Only include sortBy and sortOrder if they are explicitly provided
+      if (pagination.sortBy) {
+        paginationParams.sortBy = pagination.sortBy;
+      }
+      if (pagination.sortOrder) {
+        paginationParams.sortOrder = pagination.sortOrder;
+      }
+
       const params = {
         search: { params: searchParams },
-        pagination: {
-          page: pagination.page !== undefined ? pagination.page : currentPage,
-          size: pagination.size || pageSize,
-          sortBy: pagination.sortBy || "id", // Keep lowercase as API expects
-          sortOrder: pagination.sortOrder || "asc",
-        },
+        pagination: paginationParams,
       };
 
       console.log("Fetching Speak Up entries with params:", params);
       console.log("Search params being sent:", searchParams);
-      console.log("Pagination params being sent:", {
-        page: pagination.page !== undefined ? pagination.page : currentPage,
-        size: pagination.size || pageSize,
-        sortBy: pagination.sortBy || "id",
-        sortOrder: pagination.sortOrder || "asc",
-      });
+      console.log("Pagination params being sent:", paginationParams);
 
       const response: any = await searchSpeakUp(params).unwrap();
 

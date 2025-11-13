@@ -50,14 +50,11 @@ export const UpdateHistoryModal = ({ isOpen, onClose, encryptedData, onSuccess }
       <div className="p-6 bg-white dark:bg-gray-900 rounded-xl">
         {/* Header */}
         <div className="flex justify-between items-center mb-5 pb-3 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <h2 className="text-2xl font-bold text-blue-600">
             Update History
           </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors p-1 -mr-1"
-          >
-            <FiX className="w-6 h-6" />
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-800 dark:hover:text-gray-200">
+            <FiX className="h-6 w-6" />
           </button>
         </div>
         <form onSubmit={submit} className="space-y-4">

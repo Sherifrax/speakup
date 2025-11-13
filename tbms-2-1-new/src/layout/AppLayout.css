@@ -1,5 +1,5 @@
 .app-layout {
-  @apply min-h-screen flex bg-cover bg-center;
+  @apply h-screen flex bg-cover bg-center overflow-hidden;
   background-image: url("../../public/images/gradient-background.jpg");
 }
 
