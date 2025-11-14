@@ -76,31 +76,6 @@ export interface SpeakUpSaveParams {
   Message: string;
 }
 
-// 🔹 update history request body
-export interface SpeakUpHistorySaveParams {
-  Message: string;
-  encryptedData: string; 
-  actionBy: string;
-}
-
-// 🔹 action request body
-export interface SpeakUpActionParams {
-  action: string; 
-  remarks: string;
-  approvalActionID: number;
-  assignedEmp: string;
-  encryptedData: string;
-  actionBy: string;
-}
-
-export interface SpeakUpGet {
-  Id: number; 
-  SpeakUpTypeID: number;
-  IsAnonymous: boolean;
-  Attachment: string;
-  Message: string;
-}
-
 // ===== Old structure types (for compatibility) =====
 
 // Alias for SpeakUpItem to match old naming
@@ -139,17 +114,14 @@ export interface SpeakUpSaveResponse {
   }>;
 }
 
-// Submit params
-export interface SpeakUpSubmitParams {
-  payload: string;
-  actionBy: string;
-  remarks: string;
-  assignedEmp: string;
-}
-
 // Submit request
 export interface SpeakUpSubmitRequest {
-  params: SpeakUpSubmitParams;
+  params: {
+    payload: string;
+    actionBy: string;
+    remarks: string;
+    assignedEmp: string;
+  };
 }
 
 // Submit response
@@ -181,25 +153,6 @@ export interface SpeakUpHistoryEntry {
 // History response
 export interface SpeakUpHistoryResponse {
   data: SpeakUpHistoryEntry[];
-}
-
-// Update history params
-export interface SpeakUpUpdateHistoryParams {
-  compId: number;
-  ID: number;
-  message: string;
-}
-
-// Update history request
-export interface SpeakUpUpdateHistoryRequest {
-  params: SpeakUpUpdateHistoryParams;
-}
-
-// Update history response
-export interface SpeakUpUpdateHistoryResponse {
-  data: Array<{
-    Status: string;
-  }>;
 }
 
 // Sort direction type

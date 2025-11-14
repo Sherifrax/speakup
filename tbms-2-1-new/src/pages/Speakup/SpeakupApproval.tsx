@@ -1,19 +1,19 @@
 import { useEffect, useState } from "react";
 import ComponentCard from "../../features/common/components/page/ComponentCard";
 import PageMeta from "../../features/common/components/page/PageMeta";
-import { useSpeakUpApproval } from "../../features/speakup/hooks/useSpeakUpApproval";
-import { useSpeakUpFilters } from "../../features/speakup/hooks/useSpeakUpFilters";
-import { SpeakUpFilter } from "../../features/speakup/components/dataFilters";
-import { ViewMessageModal } from "../../features/speakup/components/ViewMessageModal";
-import { HistoryModal } from "../../features/speakup/components/HistoryModal";
-import { Toolbar } from "../../features/speakup/components/toolBar";
-import { ApprovalTable } from "../../features/speakup/components/ApprovalTable";
+import { useSpeakUpApproval } from "../../features/speakup/hooks/approval/useSpeakUpApproval";
+import { useSpeakUpFilters } from "../../features/speakup/hooks/shared/useSpeakUpFilters";
+import { SpeakUpFilter } from "../../features/speakup/components/shared/dataFilters";
+import { ViewMessageModal } from "../../features/speakup/components/approval/ViewMessageModal";
+import { HistoryModal } from "../../features/speakup/components/shared/HistoryModal";
+import { Toolbar } from "../../features/speakup/components/shared/toolBar";
+import { ApprovalTable } from "../../features/speakup/components/approval/ApprovalTable";
 import { SpeakUpEntry as SpeakUpEntryType } from "../../features/speakup/types/speakupTypes";
 import { useSearch } from "../../features/common/hooks/useSearch";
 import { useSort } from "../../features/common/hooks/useSort";
 import { ActionType } from "../../enum/actionType.enum";
-import { ApprovalActionModal } from "../../features/speakup/components/ApprovalActionModal";
-import { UpdateHistoryModal } from "../../features/speakup/components/UpdateHistoryModal";
+import { ApprovalActionModal } from "../../features/speakup/components/approval/ApprovalActionModal";
+import { UpdateHistoryModal } from "../../features/speakup/components/approval/UpdateHistoryModal";
 import { PaginationWrapper } from "../../features/common/components/tables/PaginationWrapper";
 
 export const SpeakUpApprovalPage = () => {

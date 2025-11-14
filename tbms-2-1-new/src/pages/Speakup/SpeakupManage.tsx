@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
 import ComponentCard from "../../features/common/components/page/ComponentCard";
 import PageMeta from "../../features/common/components/page/PageMeta";
-import { useSpeakUp } from "../../features/speakup/hooks/useSpeakUp";
-import { useSpeakUpFilters } from "../../features/speakup/hooks/useSpeakUpFilters";
-import { SpeakUpFilter } from "../../features/speakup/components/dataFilters";
-import { SpeakUpFormModal } from "../../features/speakup/components/formModal";
-import { HistoryModal } from "../../features/speakup/components/HistoryModal";
-import { Toolbar } from "../../features/speakup/components/toolBar";
-import { SpeakUpTable } from "../../features/speakup/components/dataTable";
+import { useSpeakUp } from "../../features/speakup/hooks/manage/useSpeakUp";
+import { useSpeakUpFilters } from "../../features/speakup/hooks/shared/useSpeakUpFilters";
+import { SpeakUpFilter } from "../../features/speakup/components/shared/dataFilters";
+import { SpeakUpFormModal } from "../../features/speakup/components/manage/formModal";
+import { HistoryModal } from "../../features/speakup/components/shared/HistoryModal";
+import { Toolbar } from "../../features/speakup/components/shared/toolBar";
+import { SpeakUpTable } from "../../features/speakup/components/manage/dataTable";
 import { SpeakUpEntry as SpeakUpEntryType } from "../../features/speakup/types/speakupTypes";
 import { useSearch } from "../../features/common/hooks/useSearch";
 import { useSort } from "../../features/common/hooks/useSort";
 import { ActionType } from "../../enum/actionType.enum";
-import { ActionModal } from "../../features/speakup/components/actionModal";
+import { ActionModal } from "../../features/speakup/components/manage/actionModal";
 import { PaginationWrapper } from "../../features/common/components/tables/PaginationWrapper";
 
 export const SpeakUpManagePage = () => {
@@ -163,14 +163,14 @@ export const SpeakUpManagePage = () => {
 
   return (
     <>
-      <PageMeta title="Speak Up" description="Speak Up Entry" />
+      <PageMeta title="Speak Up Request" description="Speak Up Entry" />
       
       {/* Page Title Section */}
       <div className="mb-6 pt-6">
         <div className="flex items-center justify-between">
           <div>
             <h1 className="block text-[32px] font-extrabold leading-[39px] text-[rgb(0,5,54)] font-montserrat mb-0">
-              Speak Up
+              Speak Up (Requests)
             </h1>
           </div>
         </div>

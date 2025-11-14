@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { FiLoader, FiAlertCircle, FiPlus, FiMinus, FiChevronUp, FiChevronDown } from "react-icons/fi";
-import { PaginationWrapper } from "./PaginationWrapper";
 
 export interface ColumnType<T> {
   key: string;
@@ -47,12 +46,7 @@ const getVisibleColumns = <T,>(cols: ColumnType<T>[], width: number) => {
 export function DataTable<T>({
   columns,
   dataSource,
-  totalItems = 0,
-  pageSize = 10,
-  currentPage = 1,
-  hidePagination = false,
   isLoading = false,
-  onPageChange,
   rowKey,
   emptyText = "No data available",
   onSort,
@@ -214,8 +208,6 @@ export function DataTable<T>({
           </tbody>
         </table>
       </div>
-
-      {/* Pagination is now handled outside the table component */}
     </div>
   );
 }
