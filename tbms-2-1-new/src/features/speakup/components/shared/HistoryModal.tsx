@@ -15,12 +15,36 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
   onClose,
   entry,
 }) => {
-  const { data: historyData, isLoading, error } = useGetSpeakUpHistoryQuery(
+  const { data: historyData, isLoading, error, isError } = useGetSpeakUpHistoryQuery(
     { payload: entry?.encryptedData || "" },
     { skip: !isOpen || !entry?.encryptedData }
   );
 
-  const historyEntries = historyData?.data || [];
+  // Handle 404 responses that contain valid JSON with message (API returns 404 but with valid response body)
+  let historyEntries: any[] = [];
+  let historyMessage: string | undefined;
+  let hasActualError = false;
+
+  if (isError && error) {
+    // Check if error response contains valid data (404 with JSON body)
+    const errorData = (error as any)?.data;
+    if (errorData && typeof errorData === 'object' && 'data' in errorData) {
+      // This is a 404 with valid JSON response
+      historyEntries = errorData.data || [];
+      historyMessage = errorData.message;
+      hasActualError = false;
+    } else {
+      // This is an actual error
+      hasActualError = true;
+    }
+  } else if (historyData) {
+    // Successful response
+    historyEntries = historyData.data || [];
+    historyMessage = historyData.message;
+    hasActualError = false;
+  }
+
+  const isEmptyHistory = !hasActualError && historyEntries.length === 0;
 
   return (
     <Modal
@@ -57,7 +81,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
               <span className="ml-3 text-gray-600 dark:text-gray-400">Loading history...</span>
             </div>
-          ) : error ? (
+          ) : hasActualError ? (
             <div className="text-center py-12">
               <div className="text-red-500 mb-2">
                 <FiX className="w-12 h-12 mx-auto" />
@@ -69,7 +93,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
                 Unable to load the history data. Please try again.
               </p>
             </div>
-          ) : historyEntries.length === 0 ? (
+          ) : isEmptyHistory ? (
             <div className="text-center py-12">
               <div className="text-gray-400 mb-4">
                 <FiClock className="w-12 h-12 mx-auto" />
@@ -78,7 +102,7 @@ export const HistoryModal: React.FC<HistoryModalProps> = ({
                 No History Available
               </h3>
               <p className="text-gray-600 dark:text-gray-400">
-                No action history has been recorded for this SpeakUp entry.
+                {historyMessage || "No action history has been recorded for this SpeakUp entry."}
               </p>
             </div>
           ) : (

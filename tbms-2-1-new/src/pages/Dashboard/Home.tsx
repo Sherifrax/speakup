@@ -25,6 +25,7 @@ import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 import { useTheme } from '../../context/ThemeContext';
 import { useNavigate } from 'react-router-dom';
+import { useGetProfileQuery } from '../../services/Common/profileGet';
 
 interface DashboardStats {
   totalRequests: number;
@@ -41,6 +42,7 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
   const [searchManage] = useSearchSpeakUpMutation();
   const [searchApproval] = useSearchSpeakupApprovalMutation();
+  const { data: profileData } = useGetProfileQuery();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -206,7 +208,7 @@ const Home: React.FC = () => {
   const chartOptions: ApexOptions = useMemo(() => ({
     chart: {
       type: 'donut',
-      height: 280,
+      height: 220,
       toolbar: { show: false },
     },
     labels: ['Pending', 'Open', 'Approved', 'Declined'],
@@ -369,7 +371,7 @@ const Home: React.FC = () => {
       {/* Header with greeting */}
       <div className="mb-2">
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-          Hello,
+          Hello, {profileData?.profile?.employeeName || 'User'}
         </h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           Welcome to your Speak Up Dashboard
@@ -449,25 +451,18 @@ const Home: React.FC = () => {
           </div>
 
           {/* Reports Section */}
-          <div>
+          <div className="bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-800/90 dark:to-gray-900/50 backdrop-blur-sm rounded-2xl border border-gray-200/80 dark:border-gray-700/80 shadow-lg hover:shadow-xl transition-all duration-300 p-6">
             {/* Reports Header */}
-            <div className="flex items-center justify-between mb-4">
+            <div className="mb-4">
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
                 Reports
               </h3>
-              <button
-                onClick={() => navigate('/speakup/approval')}
-                className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 flex items-center gap-1 transition-colors"
-              >
-                View All
-                <FiArrowRight className="w-4 h-4" />
-              </button>
             </div>
 
-            {/* Reports Card */}
-            <div className="bg-white dark:bg-gray-800/95 rounded-xl border border-gray-200/60 dark:border-gray-700/60 shadow-sm p-6">
+            {/* Reports Card - Inner Card */}
+            <div className="bg-white dark:bg-gray-800/95 rounded-xl border border-gray-200/60 dark:border-gray-700/60 shadow-sm p-4 h-[280px] flex flex-col overflow-hidden">
               {/* Card Header */}
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center justify-between mb-3 flex-shrink-0">
                 <h4 className="text-base font-semibold text-gray-900 dark:text-white">
                   Approvals Status
                 </h4>
@@ -477,15 +472,15 @@ const Home: React.FC = () => {
               </div>
 
               {/* Chart and Legend */}
-              <div className="flex flex-col md:flex-row items-center md:items-center gap-6 md:gap-16">
+              <div className="flex flex-col md:flex-row items-center md:items-center gap-6 md:gap-16 flex-1 min-h-0">
                 {chartSeries.some(v => v > 0) ? (
                   <>
-                    <div className="relative flex-shrink-0 max-w-[280px] w-full flex items-center justify-center">
+                    <div className="relative flex-shrink-0 max-w-[240px] w-full flex items-center justify-center">
                       <Chart
                         options={chartOptions}
                         series={chartSeries}
                         type="donut"
-                        height={280}
+                        height={220}
                       />
                       {/* White circle overlay for center label - perfectly centered */}
                       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
@@ -527,7 +522,7 @@ const Home: React.FC = () => {
                     </div>
                   </>
                 ) : (
-                  <div className="flex-1 flex items-center justify-center h-[280px] text-gray-500 dark:text-gray-400">
+                  <div className="flex-1 flex items-center justify-center text-gray-500 dark:text-gray-400">
                     <p>No data available</p>
                   </div>
                 )}
@@ -558,13 +553,6 @@ const Home: React.FC = () => {
               </button>
             </div>
             
-            {/* Tabs/Categories */}
-            <div className="flex gap-2 mb-5">
-              <button className="px-4 py-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm font-semibold shadow-md hover:shadow-lg transition-all duration-200">
-                Speak Up Requests ({recentItems.length})
-              </button>
-            </div>
-
             {/* Content Area with Actions - Scrollable - Match Today's Summary height */}
             <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 min-h-0">
               {recentItems.length > 0 ? (
@@ -613,14 +601,14 @@ const Home: React.FC = () => {
                         {/* View Actions - Always Available */}
                         <button
                           onClick={() => handleViewMessage(item)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 rounded-lg transition-all duration-200"
+                          className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/40 border border-blue-200 dark:border-blue-800 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-[1.02]"
                         >
                           <FiEye className="w-3.5 h-3.5" />
                           View
                         </button>
                         <button
                           onClick={() => handleViewHistory(item)}
-                          className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 rounded-lg transition-all duration-200"
+                          className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 border border-indigo-200 dark:border-indigo-800 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-[1.02]"
                         >
                           <FiClock className="w-3.5 h-3.5" />
                           History
@@ -630,34 +618,34 @@ const Home: React.FC = () => {
                         {item.ApproveBtn !== false && (
                           <button
                             onClick={() => handleApprove(item)}
-                            className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                            className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 border border-green-400/20"
                           >
-                            <FiCheck className="w-3.5 h-3.5" />
+                            <FiCheck className="w-4 h-4" />
                             Approve
                           </button>
                         )}
                         {item.RejectBtn !== false && (
                           <button
                             onClick={() => handleReject(item)}
-                            className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                            className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 border border-red-400/20"
                           >
-                            <FiX className="w-3.5 h-3.5" />
+                            <FiX className="w-4 h-4" />
                             Reject
                           </button>
                         )}
                         {item.AssignBtn === true && (
                           <button
                             onClick={() => handleAssign(item)}
-                            className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+                            className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-lg shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 border border-blue-400/20"
                           >
-                            <FiUserPlus className="w-3.5 h-3.5" />
+                            <FiUserPlus className="w-4 h-4" />
                             Assign
                           </button>
                         )}
                         {item.UpdateBtn === true && (
                           <button
                             onClick={() => handleUpdateHistory(item)}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-900/20 hover:bg-indigo-100 dark:hover:bg-indigo-900/30 rounded-lg transition-all duration-200"
+                            className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-900/30 hover:bg-indigo-100 dark:hover:bg-indigo-900/40 border border-indigo-200 dark:border-indigo-800 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-[1.02]"
                           >
                             <FiEdit2 className="w-3.5 h-3.5" />
                             Update
@@ -666,7 +654,7 @@ const Home: React.FC = () => {
                         {item.CloseBtn === true && (
                           <button
                             onClick={() => handleClose(item)}
-                            className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg shadow-sm hover:shadow-md transition-all duration-200"
+                            className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 transform hover:scale-[1.02]"
                           >
                             <FiX className="w-3.5 h-3.5" />
                             Close
@@ -685,22 +673,18 @@ const Home: React.FC = () => {
             </div>
           </div>
 
-          {/* Latest Updates Card */}
+          {/* Latest Updates Section */}
           <div className="bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-800/90 dark:to-gray-900/50 backdrop-blur-sm rounded-2xl border border-gray-200/80 dark:border-gray-700/80 shadow-lg hover:shadow-xl transition-all duration-300 p-6">
-            <div className="flex items-center justify-between mb-5">
-              <div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
-                  Latest Updates
-                </h3>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Recent activity and status changes
-                </p>
-              </div>
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-md">
-                <FiClock className="w-5 h-5 text-white" />
-              </div>
+            {/* Latest Updates Header */}
+            <div className="mb-4">
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Latest Updates
+              </h3>
             </div>
-            <div className="max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
+
+            {/* Latest Updates Card - Inner Card */}
+            <div className="bg-white dark:bg-gray-800/95 rounded-xl border border-gray-200/60 dark:border-gray-700/60 shadow-sm p-6 h-[280px] flex flex-col">
+              <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
               {latestUpdates.length > 0 ? (
                 <div className="space-y-3">
                   {latestUpdates.map((item) => (
@@ -747,11 +731,12 @@ const Home: React.FC = () => {
                   ))}
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center h-[200px] text-gray-500 dark:text-gray-400">
+                <div className="flex flex-col items-center justify-center h-full text-gray-500 dark:text-gray-400">
                   <FiClock className="w-12 h-12 mb-3 opacity-50" />
                   <p className="text-sm font-medium">No recent updates</p>
                 </div>
               )}
+              </div>
             </div>
           </div>
         </div>

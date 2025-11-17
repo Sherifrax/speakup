@@ -153,6 +153,7 @@ export interface SpeakUpHistoryEntry {
 // History response
 export interface SpeakUpHistoryResponse {
   data: SpeakUpHistoryEntry[];
+  message?: string;
 }
 
 // Sort direction type
