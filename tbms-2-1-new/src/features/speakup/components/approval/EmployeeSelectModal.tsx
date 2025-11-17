@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Modal } from "../../../common/components/ui/modal";
 import { FiSearch, FiUser, FiX } from "react-icons/fi";
 import { useSearchEmployeesMutation, EmployeeDto } from "../../../../services/Common/employeeSearch";
+import { NoDataState } from "../../../common/components/states/NoDataState";
 
 interface EmployeeSelectModalProps {
   isOpen: boolean;
@@ -60,7 +61,10 @@ export const EmployeeSelectModal = ({ isOpen, onClose, onApply }: EmployeeSelect
           {isLoading ? (
             <div className="px-5 py-8 text-sm text-gray-500 dark:text-gray-400">Searching…</div>
           ) : results.length === 0 && query.trim().length > 0 ? (
-            <div className="px-5 py-8 text-sm text-gray-500 dark:text-gray-400">No employees found</div>
+            <NoDataState
+              description="Can't find any employees matching your request."
+              className="py-8"
+            />
           ) : (
             results.map((emp) => {
               const active = selected?.empNumber === emp.empNumber;

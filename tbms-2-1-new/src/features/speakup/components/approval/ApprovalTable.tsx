@@ -7,6 +7,7 @@ import { ApprovalMobileCard } from './ApprovalMobileCard';
 import { ApprovalExpandedDetails } from './ApprovalExpandedDetails';
 import { useExpandedRows } from '../../hooks/shared/useExpandedRows';
 import type { SpeakUpItem } from '../../types/speakupTypes';
+import { NoDataState } from '../../../common/components/states/NoDataState';
 
 interface ApprovalTableProps {
   speakUpList: SpeakUpItem[];
@@ -189,11 +190,9 @@ export const ApprovalTable: React.FC<ApprovalTableProps> = ({
 
   if (!speakUpList.length) {
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden border border-gray-200 dark:border-gray-700">
-        <div className="text-center py-6 text-gray-500 dark:text-gray-400">
-          No Speak Up entries found matching the criteria.
+      <div className=" rounded-lg overflow-hidden">
+        <NoDataState description="Can't find any item matching your request" fullHeight />
         </div>
-      </div>
     );
   }
 

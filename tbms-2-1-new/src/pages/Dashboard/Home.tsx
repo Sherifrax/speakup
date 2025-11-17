@@ -36,6 +36,78 @@ interface DashboardStats {
   byStatus: Record<string, number>;
 }
 
+type StatusVariant = 'pending' | 'open' | 'approved' | 'declined' | 'default';
+
+const STATUS_STYLE_MAP: Record<StatusVariant, { badge: string; dot: string; timeline: string }> = {
+  pending: {
+    badge: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200 border border-yellow-200 dark:border-yellow-800',
+    dot: 'bg-yellow-500 dark:bg-yellow-400',
+    timeline: 'from-yellow-400'
+  },
+  open: {
+    badge: 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200 border border-blue-200 dark:border-blue-800',
+    dot: 'bg-blue-500 dark:bg-blue-400',
+    timeline: 'from-blue-400'
+  },
+  approved: {
+    badge: 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200 border border-green-200 dark:border-green-800',
+    dot: 'bg-green-500 dark:bg-green-400',
+    timeline: 'from-green-400'
+  },
+  declined: {
+    badge: 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200 border border-red-200 dark:border-red-800',
+    dot: 'bg-red-500 dark:bg-red-400',
+    timeline: 'from-red-400'
+  },
+  default: {
+    badge: 'bg-gray-100 text-gray-800 dark:bg-gray-900/40 dark:text-gray-200 border border-gray-200 dark:border-gray-800',
+    dot: 'bg-indigo-500 dark:bg-indigo-400',
+    timeline: 'from-indigo-400'
+  }
+};
+
+const mapStatusToVariant = (status?: string): StatusVariant => {
+  const normalized = status?.toLowerCase().trim() || '';
+  if (!normalized) return 'default';
+
+  if (
+    normalized === 'pending' ||
+    normalized.includes('awaiting') ||
+    normalized.includes('under hr') ||
+    normalized.includes('assigned to employee') ||
+    normalized.includes('in progress')
+  ) {
+    return 'pending';
+  }
+
+  if (normalized === 'open') {
+    return 'open';
+  }
+
+  if (
+    normalized === 'approved' ||
+    normalized === 'closed' ||
+    normalized.includes('completed') ||
+    normalized.includes('resolved')
+  ) {
+    return 'approved';
+  }
+
+  if (
+    normalized === 'declined' ||
+    normalized === 'rejected' ||
+    normalized === 'cancelled' ||
+    normalized === 'canceled' ||
+    normalized.includes('not approved')
+  ) {
+    return 'declined';
+  }
+
+  return 'default';
+};
+
+const getStatusStyle = (status?: string) => STATUS_STYLE_MAP[mapStatusToVariant(status)];
+
 const Home: React.FC = () => {
   const { theme } = useTheme();
   const isDarkMode = theme === 'dark';
@@ -557,7 +629,9 @@ const Home: React.FC = () => {
             <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 min-h-0">
               {recentItems.length > 0 ? (
                 <div className="space-y-4">
-                  {recentItems.map((item) => (
+                  {recentItems.map((item) => {
+                    const statusStyle = getStatusStyle(item.Status);
+                    return (
                     <div
                       key={item.ID}
                       className="group p-4 rounded-xl border border-gray-200/80 dark:border-gray-700/80 bg-white/50 dark:bg-gray-800/30 hover:bg-white dark:hover:bg-gray-800/50 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-md transition-all duration-300"
@@ -567,7 +641,7 @@ const Home: React.FC = () => {
                         <div className="flex items-start justify-between mb-3">
                           <div className="flex-1 min-w-0 pr-3">
                             <div className="flex items-center gap-2 mb-1.5">
-                              <div className="w-1.5 h-1.5 rounded-full bg-blue-500 dark:bg-blue-400 flex-shrink-0"></div>
+                              <div className={`w-1.5 h-1.5 rounded-full ${statusStyle.dot} flex-shrink-0`}></div>
                               <p className="text-sm font-bold text-gray-900 dark:text-white truncate">
                                 {item.SpeakUpType || 'N/A'}
                               </p>
@@ -578,13 +652,7 @@ const Home: React.FC = () => {
                               </p>
                             )}
                           </div>
-                          <span className={`px-2.5 py-1 text-xs font-semibold rounded-lg shadow-sm flex-shrink-0 ${
-                            item.Status?.toLowerCase() === 'open' 
-                              ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200 border border-blue-200 dark:border-blue-800'
-                              : item.Status?.toLowerCase() === 'closed' 
-                              ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200 border border-green-200 dark:border-green-800'
-                              : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200 border border-yellow-200 dark:border-yellow-800'
-                          }`}>
+                          <span className={`px-2.5 py-1 text-xs font-semibold rounded-lg shadow-sm flex-shrink-0 ${statusStyle.badge}`}>
                             {item.Status}
                           </span>
                         </div>
@@ -662,7 +730,7 @@ const Home: React.FC = () => {
                         )}
                       </div>
                     </div>
-                  ))}
+                  )})}
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center flex-1 min-h-[400px] text-gray-500 dark:text-gray-400">
@@ -687,14 +755,16 @@ const Home: React.FC = () => {
               <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
               {latestUpdates.length > 0 ? (
                 <div className="space-y-3">
-                  {latestUpdates.map((item) => (
+                  {latestUpdates.map((item) => {
+                    const statusStyle = getStatusStyle(item.Status);
+                    return (
                     <div
                       key={item.ID}
                       className="group relative p-4 rounded-xl border border-gray-200/80 dark:border-gray-700/80 bg-white/60 dark:bg-gray-800/40 hover:bg-white dark:hover:bg-gray-800/60 hover:border-indigo-300 dark:hover:border-indigo-700 hover:shadow-lg transition-all duration-300"
                     >
                       {/* Timeline indicator */}
-                      <div className="absolute left-4 top-6 bottom-0 w-0.5 bg-gradient-to-b from-indigo-400 to-transparent opacity-30 group-hover:opacity-60 transition-opacity"></div>
-                      <div className="absolute left-3.5 top-5 w-2 h-2 rounded-full bg-indigo-500 dark:bg-indigo-400 shadow-sm"></div>
+                      <div className={`absolute left-4 top-6 bottom-0 w-0.5 bg-gradient-to-b ${statusStyle.timeline} to-transparent opacity-30 group-hover:opacity-60 transition-opacity`}></div>
+                      <div className={`absolute left-3.5 top-5 w-2 h-2 rounded-full ${statusStyle.dot} shadow-sm`}></div>
                       
                       <div className="ml-6">
                         <div className="flex items-center justify-between mb-2.5">
@@ -708,15 +778,7 @@ const Home: React.FC = () => {
                               </p>
                             )}
                           </div>
-                          <span className={`px-2.5 py-1 text-xs font-semibold rounded-lg shadow-sm flex-shrink-0 ml-3 ${
-                            item.Status?.toLowerCase() === 'open' 
-                              ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200 border border-blue-200 dark:border-blue-800'
-                              : item.Status?.toLowerCase() === 'closed' 
-                              ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200 border border-green-200 dark:border-green-800'
-                              : item.Status?.toLowerCase() === 'approved'
-                              ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800'
-                              : 'bg-gray-100 text-gray-800 dark:bg-gray-900/40 dark:text-gray-200 border border-gray-200 dark:border-gray-800'
-                          }`}>
+                          <span className={`px-2.5 py-1 text-xs font-semibold rounded-lg shadow-sm flex-shrink-0 ml-3 ${statusStyle.badge}`}>
                             {item.Status}
                           </span>
                         </div>
@@ -728,7 +790,7 @@ const Home: React.FC = () => {
                         )}
                       </div>
                     </div>
-                  ))}
+                  )})}
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center h-full text-gray-500 dark:text-gray-400">

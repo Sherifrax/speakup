@@ -1,9 +1,14 @@
 // CommonTypes.ts
 export interface Profile {
-  employeeName: string;
-  designation: string;
-  email: string;
-  profilePhoto: string;
+  employeeName?: string;
+  designation?: string;
+  email?: string;
+  profilePhoto?: string;
+  employeeId?: string;
+  employeeCode?: string;
+  employeeNumber?: string;
+  employeeNo?: string;
+  userId?: string;
 }
 
 export interface SubMenuItem {
