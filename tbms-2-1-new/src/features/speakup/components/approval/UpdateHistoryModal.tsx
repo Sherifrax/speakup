@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Modal } from "../../../common/components/ui/modal";
 import Button from "../../../common/components/ui/button/Button";
-import { FiLoader, FiX } from "react-icons/fi";
+import { FiCheck, FiLoader, FiX } from "react-icons/fi";
 import { useUpdateHistoryByPayloadMutation } from "../../../../services/Speakup/approval/updateHistoryPayload";
 import { SaveStatus } from "../../../common/types/status";
 
@@ -65,6 +65,22 @@ export const UpdateHistoryModal = ({ isOpen, onClose, encryptedData, onSuccess }
             placeholder="Enter your update/comment"
             className="w-full px-4 py-3 border rounded-lg dark:bg-gray-800 dark:text-white focus:ring-blue-500 focus:border-blue-500"
           />
+          {status === SaveStatus.Success && (
+            <div className="flex items-center gap-3 p-3 bg-green-50 dark:bg-green-900/30 rounded-lg border border-green-200 dark:border-green-800">
+              <FiCheck className="h-5 w-5 text-green-500 dark:text-green-400" />
+              <p className="text-sm font-medium text-green-800 dark:text-green-200">
+                History updated successfully!
+              </p>
+            </div>
+          )}
+          {status === SaveStatus.Error && (
+            <div className="flex items-center gap-3 p-3 bg-red-50 dark:bg-red-900/30 rounded-lg border border-red-200 dark:border-red-800">
+              <FiX className="h-5 w-5 text-red-500 dark:text-red-400" />
+              <p className="text-sm font-medium text-red-800 dark:text-red-200">
+                Unable to update history. Please try again.
+              </p>
+            </div>
+          )}
           <div className="flex gap-3 justify-end">
             <Button type="button" onClick={onClose} className="bg-gray-100 hover:bg-gray-200 text-gray-700">
               Cancel
