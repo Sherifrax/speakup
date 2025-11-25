@@ -184,7 +184,7 @@ export default function UserInfoCard({
         </div>
 
         {/* Name with better typography */}
-        <span className="relative z-10 font-semibold text-gray-800 dark:text-gray-100 text-sm tracking-tight transition-colors duration-200 group-hover:text-gray-900 dark:group-hover:text-white">
+        <span className="relatvie z-10 font-semibold text-gray-800 dark:text-gray-100 text-sm tracking-tight transition-colors duration-200 group-hover:text-gray-900 dark:group-hover:text-white">
           {truncatedName}
         </span>
 

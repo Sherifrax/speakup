@@ -15,7 +15,7 @@ import { RiFileListLine } from "react-icons/ri";
 import { GoChecklist } from "react-icons/go";
 import { BiListPlus } from "react-icons/bi";
 
- import { GridIcon, TableIcon } from "../assets/icons/general";
+import { GridIcon, TableIcon } from "../assets/icons/general";
 
 export const ICONS = {
     Dashboard: GridIcon,

@@ -54,9 +54,6 @@ const App: React.FC = () => {
           <Route element={<PrivateRoute><AppLayout /></PrivateRoute>}>
             <Route index path="/home" element={<Home />} />
             {speakupApiRoutes()}
-            {/* {UrlRoutes()}
-            {RequestLog()}
-            {BlockedIp()} */}
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
