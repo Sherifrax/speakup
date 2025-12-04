@@ -9,41 +9,48 @@ import { LuLogOut } from "react-icons/lu";
 
 const apiModules: ModuleMenu[] = JSON.parse(localStorage.getItem("menu") || "[]");
 
-// Convert API ModuleMenu[] → NavItem[]
-const navItems: NavItem[] = apiModules.map((module) => {
-  const legacyMenu = module as unknown as {
-    menuName?: string;
-    iconName?: string;
-    url?: string;
-  };
-
-  const subMenuItems = Array.isArray(module.subMenu) ? module.subMenu : [];
-  const iconKey = subMenuItems[0]?.iconName || legacyMenu.iconName;
-  const defaultPath = subMenuItems[0]?.url || legacyMenu.url;
-
-  return {
-    name: module.moduleName || legacyMenu.menuName || "",
-    icon: (() => {
-      const IconComponent =
-        (iconKey && ICONS[iconKey as keyof typeof ICONS]) || ICONS.Grid;
-      return <IconComponent />;
-    })(),
-    path: defaultPath,
-    subItems:
-      subMenuItems.length > 0
-        ? subMenuItems.map((sub) => ({
-            name: sub.subMenuName,
-            path: sub.url,
-          }))
-        : undefined,
-  };
-});
-
 
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Determine which module's submenus should be shown, based on ModuleName selected from the header
+  const selectedModuleName =
+    localStorage.getItem("ModuleName") ||
+    (apiModules[0] &&
+      ((apiModules[0] as unknown as { moduleName?: string; menuName?: string })
+        .moduleName ||
+        (apiModules[0] as unknown as { moduleName?: string; menuName?: string })
+          .menuName) ||
+      "");
+
+  const modulesToRender =
+    apiModules.filter((module) => {
+      const legacyMenu = module as unknown as {
+        menuName?: string;
+      };
+      const name = module.moduleName || legacyMenu.menuName || "";
+      return name === selectedModuleName;
+    }) || apiModules;
+
+  // Sidebar should show only submodules (subMenu) of the selected module, each with its own icon.
+  const moduleForSidebar =
+    modulesToRender.length > 0 ? modulesToRender[0] : apiModules[0];
+
+  const navItems: NavItem[] = Array.isArray(moduleForSidebar?.subMenu)
+    ? moduleForSidebar.subMenu.map((sub) => {
+        const iconKey = sub.iconName;
+        const IconComponent =
+          (iconKey && ICONS[iconKey as keyof typeof ICONS]) || ICONS.Grid;
+
+        return {
+          name: sub.subMenuName,
+          icon: <IconComponent />,
+          path: sub.url,
+        };
+      })
+    : [];
 
   const [openSubmenu, setOpenSubmenu] = useState<{
     type: "main";
@@ -245,14 +252,14 @@ const AppSidebar: React.FC = () => {
 
   return (
     <aside
-      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 
+      className={`fixed top-0 left-0 flex flex-col px-6 
     bg-transparent text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 
-    border-r-2 border-white shadow-[1px_0_4px_rgba(255,255,255,0.3)]
+    border-r border-white shadow-[1px_0_4px_rgba(255,255,255,0.3)]
     ${
       isExpanded || isMobileOpen
-        ? "w-[290px]"
+        ? "w-[260px]"
         : isHovered
-        ? "w-[290px]"
+        ? "w-[260px]"
         : "w-[90px]"
     }
     ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
@@ -260,11 +267,7 @@ const AppSidebar: React.FC = () => {
       onMouseEnter={() => !isExpanded && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div
-        className={`${!isMobileOpen ? "py-8" : "py-3"} flex ${
-          !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
-        }`}
-      >
+      <div className="flex items-center justify-between h-[102px] w-full">
         <Link to="/home" className="flex items-center">
           {isExpanded || isHovered || isMobileOpen ? (
             <>
@@ -332,15 +335,13 @@ const AppSidebar: React.FC = () => {
       <div className="mt-auto pb-6">
         <button
           onClick={handleLogout}
-          className={`menu-item group menu-item-inactive ${
-            !isExpanded && !isHovered ? "lg:justify-center" : "lg:justify-start"
-          }`}
+          className="sidebar-logout"
         >
-          <span className="menu-item-icon-size menu-item-icon-inactive">
+          <span className="sidebar-logout__icon">
             <LuLogOut />
           </span>
           {(isExpanded || isHovered || isMobileOpen) && (
-            <span className="menu-item-text">Logout</span>
+            <span className="sidebar-logout__label">Logout</span>
           )}
         </button>
       </div>

@@ -15,7 +15,7 @@ export const AddButton = ({
   text = "Add",
   icon = <span className="pr-2 text-xl">+</span>,
   fromColor = "from-blue-500",
-  toColor = "to-blue-600",
+  toColor = "to-blue-800",
   className = ""
 }: AddButtonProps) => {
   return (

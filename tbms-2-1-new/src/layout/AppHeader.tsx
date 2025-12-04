@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useLocation } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useSidebar } from "../context/SidebarContext";
 import { ThemeToggleButton } from "../features/common/components/header/ThemeToggleButton";
 import UserInfoCard from "../features/common/components/header/UserInfoCard";
@@ -8,6 +8,7 @@ import { Dropdown } from "../features/common/components/ui/dropdown/Dropdown";
 import { ICONS } from "../constants/iconList";
 import { ModuleMenu } from "../features/common/types/commonTypes";
 import type { NavItem } from "../features/common/types/navigation";
+import { ReactComponent as AppsIcon } from "../assets/icons/additional/widgets.svg?react";
 
 const apiModules: ModuleMenu[] = JSON.parse(localStorage.getItem("menu") || "[]");
 
@@ -42,18 +43,32 @@ const navItems: NavItem[] = apiModules.map((module) => {
 });
 
 const AppHeader: React.FC = () => {
-  const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
+  const [isAppsMenuOpen, setIsAppsMenuOpen] = useState(false);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
   const [isLaptop, setIsLaptop] = useState(window.innerWidth >= 991);
   const [mobileOpenSubmenu, setMobileOpenSubmenu] = useState<number | null>(null);
+  const [isMobileProfileMenuOpen, setIsMobileProfileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [moduleName, setModuleName] = useState("TBMS");
-  // Fetch module name from localStorage
+  // Fetch module name from localStorage or fall back to first module from API
   useEffect(() => {
     const storedModuleName = localStorage.getItem("ModuleName");
     if (storedModuleName && storedModuleName.trim() !== "") {
       setModuleName(storedModuleName);
+      return;
+    }
+
+    if (apiModules.length > 0) {
+      const firstModule = apiModules[0] as unknown as {
+        moduleName?: string;
+        menuName?: string;
+      };
+      const name = firstModule.moduleName || firstModule.menuName;
+      if (name && name.trim() !== "") {
+        setModuleName(name);
+      }
     }
   }, []);
 
@@ -86,8 +101,7 @@ const AppHeader: React.FC = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const toggleApplicationMenu = () =>
-    setApplicationMenuOpen(!isApplicationMenuOpen);
+  const toggleAppsMenu = () => setIsAppsMenuOpen((prev) => !prev);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -102,9 +116,9 @@ const AppHeader: React.FC = () => {
   }, []);
 
   return (
-    <header className="sticky top-0 flex w-full bg-transparent border-b-2 border-white shadow-[0_1px_4px_rgba(255,255,255,0.3)] z-[9999] backdrop-blur-none flex-shrink-0">
-      <div className="flex flex-col items-center justify-between flex-grow lg:flex-row lg:px-6">
-        <div className="relative flex items-center justify-between w-full gap-2 px-3 py-3 border-b border-gray-200 dark:border-gray-800 sm:gap-4 lg:justify-normal lg:border-b-0 lg:px-0 lg:py-4">
+    <header className="sticky top-0 flex w-full bg-transparent border-b border-white shadow-none lg:shadow-[0_1px_4px_rgba(255,255,255,0.3)] z-[9999] flex-shrink-0 lg:h-[102px]">
+      <div className="flex flex-col items-center justify-between flex-grow lg:flex-row lg:px-6 lg:h-[102px] w-full">
+        <div className="relative flex items-center justify-between w-full gap-2 px-3 py-3 border-b border-gray-200 dark:border-gray-800 sm:gap-4 lg:justify-normal lg:border-b-0 lg:px-0 lg:py-0">
           {/* Sidebar Toggle - Top Left on Mobile */}
           <div className="relative">
             <button
@@ -135,7 +149,7 @@ const AppHeader: React.FC = () => {
                 </svg>
               )}
             </button>
-            
+
             {/* Mobile Navigation Dropdown */}
             {!isLaptop && (
               <Dropdown
@@ -233,45 +247,127 @@ const AppHeader: React.FC = () => {
             />
           </Link>
 
-          {/* Application menu button - Top Right on Mobile */}
+          {/* Mobile 3-dot menu button - Top Right */}
           <button
-            onClick={toggleApplicationMenu}
-            className="flex items-center justify-center w-10 h-10 text-gray-700 rounded-lg z-[10000] hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 lg:hidden ml-auto"
+            onClick={() => setIsMobileProfileMenuOpen(!isMobileProfileMenuOpen)}
+            className="lg:hidden flex items-center justify-center w-10 h-10 text-gray-500 border border-gray-200 rounded-lg dark:border-gray-800 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            aria-label="Toggle Profile Menu"
           >
             <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
             >
-              <path
-                fillRule="evenodd"
-                clipRule="evenodd"
-                d="M5.99902 10.4951C6.82745 10.4951 7.49902 11.1667 7.49902 11.9951V12.0051C7.49902 12.8335 6.82745 13.5051 5.99902 13.5051C5.1706 13.5051 4.49902 12.8335 4.49902 12.0051V11.9951C4.49902 11.1667 5.1706 10.4951 5.99902 10.4951ZM17.999 10.4951C18.8275 10.4951 19.499 11.1667 19.499 11.9951V12.0051C19.499 12.8335 18.8275 13.5051 17.999 13.5051C17.1706 13.5051 16.499 12.8335 16.499 12.0051V11.9951C16.499 11.1667 17.1706 10.4951 17.999 10.4951ZM13.499 11.9951C13.499 11.1667 12.8275 10.4951 11.999 10.4951C11.1706 10.4951 10.499 11.1667 10.499 11.9951V12.0051C10.499 12.8335 11.1706 13.5051 11.999 13.5051C12.8275 13.5051 13.499 12.8335 13.499 12.0051V11.9951Z"
-                fill="currentColor"
-              />
+              <circle cx="10" cy="4" r="1.5" fill="currentColor" />
+              <circle cx="10" cy="10" r="1.5" fill="currentColor" />
+              <circle cx="10" cy="16" r="1.5" fill="currentColor" />
             </svg>
           </button>
 
           {/* Desktop Logo / Title */}
           <div className="hidden lg:block">
-            <h1 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+            <h1 className="app-header__title">
               {moduleName}
             </h1>
           </div>
         </div>
 
-        {/* Right Section */}
+        {/* Right Section - theme, user info, and apps menu */}
         <div
-          className={`${
-            isApplicationMenuOpen ? "flex" : "hidden"
-          } items-center justify-between w-full gap-4 px-5 py-4 lg:flex shadow-theme-md lg:justify-end lg:px-0 lg:shadow-none`}
+          className={`flex items-center justify-end w-full gap-6 px-4 py-0 lg:px-0 min-h-[102px] ${
+            !isLaptop && !isMobileProfileMenuOpen ? "hidden" : ""
+          }`}
         >
-          <div className="flex items-center gap-2 2xsm:gap-3">
+          {/* Theme / user area */}
+          <div className="flex items-center gap-2 2xsm:gap-3 h-full transition-all duration-300">
             <ThemeToggleButton />
+            <UserInfoCard />
           </div>
-          <UserInfoCard />
+
+          {/* Apps container - Hidden on mobile, visible on desktop */}
+          <div className="hidden lg:flex items-center justify-center app-header__apps-container">
+            {/* Top-right applications menu showing modules from API profile */}
+            <div className="relative flex items-center justify-center w-full">
+              <button
+                onClick={toggleAppsMenu}
+                className={`dropdown-toggle flex items-center justify-center h-[48px] lg:min-w-fit lg:max-w-[220px] px-3 rounded-lg font-medium text-sm cursor-pointer transition-all hover:opacity-90 trojan-neumorphism-box trojan-neumorphism-box-shadow ${isAppsMenuOpen ? 'active' : ''}`}
+                style={{ padding: "0 8px" }}
+                aria-label="Open applications menu"
+              >
+                <span className="mr-3 text-gray-800 dark:text-gray-700 whitespace-nowrap overflow-hidden text-ellipsis max-w-[80px] text-xs">
+                  {moduleName}
+                </span>
+                {/* Widgets/grid icon - size aligned with WEBUI */}
+                <AppsIcon className="w-6 h-6 text-gray-800 dark:text-gray-200 flex-shrink-0" />
+              </button>
+
+              <Dropdown
+                isOpen={isAppsMenuOpen}
+                onClose={() => setIsAppsMenuOpen(false)}
+                className="w-[335px] max-w-[calc(100vw-2rem)] sm:max-w-[335px]"
+                placement="auto"
+              >
+                <div className="py-2">
+                  <div className="px-6 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider border-b border-gray-100 dark:border-gray-700 dark:text-gray-400">
+                    Applications
+                  </div>
+                  {navItems.map((item, index) => {
+                    const isModuleActive = item.name === moduleName;
+
+                    return (
+                      <div key={item.name}>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (item.path) {
+                              localStorage.setItem("ModuleName", item.name);
+                              setModuleName(item.name);
+                              setIsAppsMenuOpen(false);
+                              navigate(item.path);
+                            }
+                          }}
+                          className={`flex w-full items-center justify-between px-6 py-4 h-[54px] text-sm font-medium transition-colors ${
+                            isModuleActive
+                              ? "text-brand-500 dark:text-brand-400 bg-brand-50 dark:bg-brand-900/20"
+                              : "text-gray-700 dark:text-gray-300 hover:text-brand-500 dark:hover:text-brand-400 hover:bg-gray-50 dark:hover:bg-gray-800"
+                          }`}
+                        >
+                          <div className="flex items-center flex-1 min-w-0">
+                            <span className="mr-3 flex h-5 w-5 items-center justify-center text-gray-500 dark:text-gray-400 flex-shrink-0">
+                              {item.icon}
+                            </span>
+                            <span className="font-medium text-left flex-1 truncate">
+                              {item.name}
+                            </span>
+                          </div>
+                          {isModuleActive && (
+                            <svg
+                              className="w-5 h-5 text-brand-500 dark:text-brand-400 flex-shrink-0 ml-2"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                          )}
+                        </button>
+                        {index < navItems.length - 1 && (
+                          <div className="mx-6 border-b border-gray-100 dark:border-gray-700" />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </Dropdown>
+            </div>
+          </div>
         </div>
       </div>
     </header>

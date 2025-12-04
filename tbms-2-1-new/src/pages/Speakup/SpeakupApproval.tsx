@@ -162,8 +162,8 @@ export const SpeakUpApprovalPage = () => {
       {/* Page Title Section */}
       <div className="mb-6 pt-6">
         <div className="flex items-center justify-between">
-        <div>
-            <h1 className="block text-[32px] font-extrabold leading-[39px] text-[rgb(0,5,54)] font-montserrat mb-0">
+          <div>
+            <h1 className="page-title-primary">
               Speak Up (Approvals)
             </h1>
           </div>
