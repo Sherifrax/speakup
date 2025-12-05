@@ -23,7 +23,12 @@ export const Toolbar = ({
   return (
     <div className="flex flex-row md:flex-row gap-4 items-center w-full">
       <div className="relative w-full">
-        <SearchInput value={searchQuery} onChange={onSearchChange} placeholder={SearchBarPlaceholders[placeholderKey]} />
+        <SearchInput 
+          value={searchQuery} 
+          onChange={onSearchChange} 
+          placeholder={SearchBarPlaceholders[placeholderKey]} 
+          inputClassName="max-[427px]:pr-12"
+        />
         <FilterButton onClick={onFilterToggle} />
       </div>
       {showAddButton && <AddButton onClick={onAddClick} />}
