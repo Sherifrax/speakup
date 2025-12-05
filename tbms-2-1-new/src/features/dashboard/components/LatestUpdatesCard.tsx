@@ -31,8 +31,8 @@ export const LatestUpdatesCard: React.FC<LatestUpdatesCardProps> = ({ items }) =
                     <div className={`absolute left-3.5 top-5 w-2 h-2 rounded-full ${statusStyle.dot} shadow-sm`}></div>
 
                     <div className="ml-6">
-                      <div className="flex items-center justify-between mb-2.5">
-                        <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between mb-2.5 gap-3">
+                        <div className="flex-1 min-w-0 pr-3">
                           <p className="text-sm font-bold text-gray-900 dark:text-white truncate mb-1">
                             {item.SpeakUpType || "N/A"}
                           </p>
@@ -44,9 +44,10 @@ export const LatestUpdatesCard: React.FC<LatestUpdatesCardProps> = ({ items }) =
                           )}
                         </div>
                         <span
-                          className={`px-2.5 py-1 text-xs font-semibold rounded-lg shadow-sm flex-shrink-0 ml-3 ${statusStyle.badge}`}
+                          className={`px-2.5 py-1 text-xs font-semibold rounded-lg shadow-sm flex-shrink-0 max-w-[45%] min-w-0 ${statusStyle.badge}`}
+                          title={item.Status}
                         >
-                          {item.Status}
+                          <span className="block truncate">{item.Status}</span>
                         </span>
                       </div>
                       {item.Message && (

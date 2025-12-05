@@ -20,13 +20,13 @@ export const ApprovalsStatusCard: React.FC<ApprovalsStatusCardProps> = ({
         <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Reports</h3>
       </div>
 
-      <div className="bg-white dark:bg-gray-800/95 rounded-xl border border-gray-200/60 dark:border-gray-700/60 shadow-sm p-4 h-[280px] flex flex-col overflow-hidden">
+      <div className="bg-white dark:bg-gray-800/95 rounded-xl border border-gray-200/60 dark:border-gray-700/60 shadow-sm p-4 h-auto md:h-[280px] min-h-[400px] md:min-h-0 flex flex-col overflow-hidden">
         <div className="flex items-center justify-between mb-3 flex-shrink-0">
           <h4 className="text-md font-bold text-gray-900 dark:text-white">Approvals Status</h4>
           <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Today</span>
         </div>
 
-        <div className="flex flex-col md:flex-row items-center md:items-center gap-6 md:gap-16 flex-1 min-h-0">
+        <div className="flex flex-col md:flex-row items-center md:items-center gap-6 md:gap-16 flex-1 min-h-0 overflow-y-auto md:overflow-visible">
           {chartSeries.some((v) => v > 0) ? (
             <>
               <div className="relative flex-shrink-0 max-w-[240px] w-full flex items-center justify-center">
