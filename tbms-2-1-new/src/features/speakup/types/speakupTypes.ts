@@ -70,9 +70,9 @@ export interface SpeakUpFiltersResponse {
 export interface SpeakUpSaveParams {
   payload?: string;
   actionBy: string;
-  IsAnonymous: number;
+  IsAnonymous: number | string; // Backend expects string, but we use number in form
   Attachment: string;
-  TypeID: number;
+  TypeID: number | string; // Backend expects string, but we use number in form
   Message: string;
 }
 

@@ -150,9 +150,9 @@ export const useSpeakUp = () => {
         params: {
           actionBy: isEditing ? "EditBtn" : "AddBtn",
           payload: isEditing ? editingEncryptedPayload ?? "" : undefined,
-          IsAnonymous: formData.IsAnonymous ? 1 : 0,
+          IsAnonymous: String(formData.IsAnonymous ? 1 : 0), // Convert to string as backend expects string
           Attachment: formData.Attachment,
-          TypeID: formData.TypeID,
+          TypeID: String(formData.TypeID), // Convert to string as backend expects string
           Message: formData.Message,
         },
       };
