@@ -1,5 +1,6 @@
 import { apiService } from "../apiService";
 import { baseModule } from "../../enum/api/basemodules.enum";
+import { DocumentUrls } from "../../enum/api/document.enum";
 
 export interface UploadDocumentResponse {
   fileName?: string;
@@ -17,7 +18,7 @@ export const uploadDocumentApi = apiService.injectEndpoints({
         const token = localStorage.getItem("token") || "";
         
         return {
-          url: `${baseModule.common}api/doc/upload`,
+          url: `${baseModule.common}${DocumentUrls.UPLOAD}`,
           method: "POST",
           body: formData,
           prepareHeaders: (headers: Headers) => {

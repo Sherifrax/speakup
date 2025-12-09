@@ -1,5 +1,6 @@
 import { apiService } from "../apiService";
 import { baseModule } from "../../enum/api/basemodules.enum";
+import { DocumentUrls } from "../../enum/api/document.enum";
 
 export interface DownloadAttachmentParams {
   fileName: string;
@@ -16,7 +17,7 @@ export const speakUpDownloadAttachment = apiService.injectEndpoints({
         };
         
         // Construct the full URL to ensure it's correct
-        const url = `${baseModule.common}api/doc/download`;
+        const url = `${baseModule.common}${DocumentUrls.DOWNLOAD}`;
         
         return {
           url,
